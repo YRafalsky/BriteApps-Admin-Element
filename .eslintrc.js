@@ -32,6 +32,7 @@ module.exports = {
     "prefer-template": 0,
     "prefer-const": 0,
     "no-var": 0,
+    "no-multiple-empty-lines": [2, {"max": 2, "maxEOF": 1}],
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
   }

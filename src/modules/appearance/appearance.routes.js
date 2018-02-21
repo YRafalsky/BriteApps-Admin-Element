@@ -2,7 +2,7 @@ import RootPage from './appearance.page.vue'
 
 let routes = [
   {
-    path: '/appearance',
+    path: 'appearance',
     name: 'appearance',
     component: RootPage
   },

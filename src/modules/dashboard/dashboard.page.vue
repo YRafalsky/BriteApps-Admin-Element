@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-root">
-    <ba-header></ba-header>
+    <ba-header active-module="dashboard"></ba-header>
     <div class="u-pt4"></div>
     <div class="u-pt4"></div>
     <h2 class="u-text--center u-header-padding"> {{user.company.name}}</h2>
@@ -19,7 +19,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState('login', ['user'])
+    ...mapState('shared', ['user'])
   },
 }
 </script>

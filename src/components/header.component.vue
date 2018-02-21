@@ -1,58 +1,65 @@
 <template>
   <div class="nav nav--fixed">
-    <a @click="$router.push('dashboard'); $event.preventDefault()" href="/dashboard">
+    <router-link to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
-    </a>
-    <a v-for="module in modules" @click="$router.push(module.link); $event.preventDefault()" :href="module.link" class="nav__link" :class="{ 'nav__link--active' : activeModule === module.name }">
+    </router-link>
+    <router-link v-if="!disableMenu" v-for="module in modules" :key="module.name" :to="module.link" class="nav__link" :class="{ 'nav__link--active' : activeModule === module.name }">
       <icon class="u-mr1" scale="0.75" :name="module.icon"></icon>
       {{ module.name }}
-    </a>
+    </router-link>
 
-    <a href="/login" @click="logout(); $event.preventDefault()" class="nav__link nav__link--last u-mr4">Logout</a>
+    <div class="u-float-right">
+
+        <router-link :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./" class="nav__link nav__link--last u-mr4 u-text--center">{{companyId}}</router-link>
+        <router-link to="/login" @click="logout(); $event.preventDefault()" class="nav__link nav__link--last u-mr4 u-text--center"><icon :scale="1" name="sign-out"></icon></router-link>
+    </div>
   </div>
 </template>
 
 <script>
 
-import {mapActions} from 'vuex'
+import {mapActions, mapState} from 'vuex'
 
 export default {
   name: 'ba-header',
-  props: {
-    activeModule: String,
-  },
+  props: ['activeModule', 'disableMenu'],
   data () {
+    let companyId = this.$route.params.companyId
     let modules = [
       {
-        link: '/builds',
+        link: 'builds',
         name: 'Builds',
         icon: 'rocket',
       },
       {
-        link: '/settings',
+        link: 'settings',
         name: 'Settings',
         icon: 'cog',
       },
       {
-        link: '/content',
+        link: 'content',
         name: 'Content',
         icon: 'font',
       },
       {
-        link: '/templates',
+        link: 'templates',
         name: 'Templates',
         icon: 'code',
       },
 
       {
-        link: '/appearance',
+        link: 'appearance',
         name: 'Appearance',
         icon: 'adjust',
       },
     ]
     return {
       modules,
+      companyId,
     }
+  },
+  computed: {
+    ...mapState('shared', ['user']),
   },
   methods: {
     ...mapActions('login', ['logout'])
@@ -103,8 +110,6 @@ export default {
   }
 
   .nav__link--last {
-    float: right;
-    display: block;
     margin: 0.5em;
   }
 
