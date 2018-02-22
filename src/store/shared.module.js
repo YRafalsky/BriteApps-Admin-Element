@@ -19,12 +19,20 @@ const module = {
     },
   },
   getters: {
-    companyName: state => {
-      // return state.user ? state.user.company.name : ''
+    availableCompanies: state => {
+      if (!state.user) {
+        return []
+      }
+
+      return state.user.available_companies;
     },
 
-    getterName: state => {
-      return state.var1
+    companyNameById: (state) => (companyId) =>   {
+        if (!companyId) {
+          return null
+        }
+        return state.user.available_companies.find(_ => _.id === companyId).name
+
     },
   }
 }

@@ -5,14 +5,19 @@
         <div class="u-pt4"></div>
         <div class="u-text--center u-mb4">Please choose your company</div>
 
-        <router-link class="company-link" to="/company/f19e0b98-533c-4cb4-8000-fe3f55b3f3ab/">IWS</router-link>
+        <router-link v-for="company in availableCompanies" class="company-link" :to="'/company/'+ company.id +'/'">{{company.name}}</router-link>
 
     </div>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
+
   export default {
-    name: 'ba-company-select'
+    name: 'ba-company-select',
+    computed: {
+      ...mapGetters('shared', ['availableCompanies'])
+    }
   }
 </script>
 

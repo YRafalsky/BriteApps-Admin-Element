@@ -10,7 +10,7 @@
 
     <div class="u-float-right">
 
-        <router-link :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./" class="nav__link nav__link--last u-mr4 u-text--center">{{companyId}}</router-link>
+        <router-link :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./" class="nav__link nav__link--last u-mr4 u-text--center">{{companyNameById(companyId)}}</router-link>
         <router-link to="/login" @click="logout(); $event.preventDefault()" class="nav__link nav__link--last u-mr4 u-text--center"><icon :scale="1" name="sign-out"></icon></router-link>
     </div>
   </div>
@@ -18,7 +18,7 @@
 
 <script>
 
-import {mapActions, mapState} from 'vuex'
+import {mapActions, mapState, mapGetters} from 'vuex'
 
 export default {
   name: 'ba-header',
@@ -60,6 +60,8 @@ export default {
   },
   computed: {
     ...mapState('shared', ['user']),
+    ...mapGetters('shared', ['companyNameById']),
+
   },
   methods: {
     ...mapActions('login', ['logout'])
