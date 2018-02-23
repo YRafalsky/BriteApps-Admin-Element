@@ -40,7 +40,7 @@ const templatesModule = {
         html_content: payload.html_content
       }
 
-      let promise = axios.post(config.set_carrier_template, dataToSend)
+      let promise = axios.post(`${config.url}/company/${payload.companyId}/set_carrier_template/`, dataToSend)
 
       console.log('payload', payload)
 
@@ -58,7 +58,7 @@ const templatesModule = {
           token: localStorage.carrierToken
         }
         console.log('data', data)
-        let promise = axios.post(config.get_carrier_templates, data)
+        let promise = axios.post(`${config.url}/company/${payload.companyId}/get_carrier_templates/`, data)
 
         promise.then((response) => {
           if (isFailed(response)) {

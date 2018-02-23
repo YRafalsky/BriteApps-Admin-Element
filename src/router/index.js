@@ -33,10 +33,10 @@ let router = new Router({
         ...ContentRoutes,
         ...AppearanceRoutes,
         ...TemplatesRoutes,
-        ]
+      ]
     },
-
-
+  
+  
   ],
   mode: 'history',
 })

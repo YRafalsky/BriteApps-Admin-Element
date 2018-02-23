@@ -70,16 +70,19 @@ export default {
         return
       }
 
+      let companyId = this.$route.params.companyId
+
       let payload = {
         template: this.template,
         text_content: newValue,
         html_content: this.htmlValue,
+        companyId,
       }
 
       this.textValue = newValue
       this.saveSingleTemplate(payload)
         .then(repsonse => {
-          this.$message({
+          this.$notify({
             message: 'Template saved successfully',
             type: 'success'
           })
@@ -94,7 +97,7 @@ export default {
       this.isEditingHtml = false
       this.saveSingleTemplate(payload)
         .then(repsonse => {
-          this.$message({
+          this.$notify({
             message: 'Content saved successfully',
             type: 'success'
           })

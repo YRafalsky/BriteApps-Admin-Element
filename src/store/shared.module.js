@@ -23,16 +23,17 @@ const module = {
       if (!state.user) {
         return []
       }
-
-      return state.user.available_companies;
+      
+      return state.user.available_companies
     },
-
-    companyNameById: (state) => (companyId) =>   {
-        if (!companyId) {
-          return null
-        }
-        return state.user.available_companies.find(_ => _.id === companyId).name
-
+    isSuperuser: state => {
+      return state.user.is_superuser
+    },
+    companyNameById: (state) => (companyId) => {
+      if (!companyId) {
+        return null
+      }
+      return state.user.available_companies.find(_ => _.id === companyId).name
     },
   }
 }

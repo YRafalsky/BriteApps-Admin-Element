@@ -1,23 +1,29 @@
 <template>
-    <div class="company-select__root">
+    <div class="company-select__root" v-loading="loading">
         <ba-header :disableMenu="true"></ba-header>
         <div class="u-pt4"></div>
         <div class="u-pt4"></div>
         <div class="u-text--center u-mb4">Please choose your company</div>
 
-        <router-link v-for="company in availableCompanies" class="company-link" :to="'/company/'+ company.id +'/'">{{company.name}}</router-link>
+        <router-link v-for="company in availableCompanies" :key="company.id" class="company-link" :to="'/company/'+ company.id +'/'">{{company.name}}</router-link>
 
     </div>
 </template>
 
 <script>
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
     name: 'ba-company-select',
     computed: {
       ...mapGetters('shared', ['availableCompanies'])
-    }
+    },
+    methods: {
+      ...mapActions('login', ['init'])
+    },
+    created () {
+      this.init()
+    },
   }
 </script>
 

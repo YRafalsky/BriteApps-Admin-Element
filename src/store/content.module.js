@@ -44,7 +44,7 @@ const contentModule = {
         value: payload.newValue
       }
 
-      let promise = axios.post(config.set_carrier_content, dataToSend)
+      let promise = axios.post(`${config.url}/company/${payload.companyId}/set_carrier_content/`, dataToSend)
 
       console.log('payload', payload)
 
@@ -62,8 +62,8 @@ const contentModule = {
           token: localStorage.carrierToken
         }
         console.log('data', data)
-        let promise = axios.post(config.get_carrier_content, data)
-
+        let promise = axios.post(`${config.url}/company/${payload.companyId}/get_carrier_content/`, data)
+        
         promise.then((response) => {
           if (isFailed(response)) {
             reject(response)
