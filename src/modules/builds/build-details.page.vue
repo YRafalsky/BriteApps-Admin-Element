@@ -93,12 +93,16 @@
             </el-dialog>
 
         </div>
-        <div class="u-text--right">
+        <!--<div class="u-text&#45;&#45;right">-->
+        <div class="u-text--center">
           <el-checkbox  v-model="showBuildTechnicalDetails">Show Build Technical Details</el-checkbox>
+        </div>
+        <!--<div class="u-text&#45;&#45;right">-->
+        <div class="u-text--center">
+          <el-checkbox  v-model="showBuildLogs">Show Events Log</el-checkbox>
         </div>
         <el-collapse-transition>
           <div v-show="showBuildTechnicalDetails">
-
             <pre class="build__pre u-px4">
             <div>Build status : {{build.status}}</div>
             <div>aws_build_id : {{build.aws_build_id}}</div>
@@ -110,6 +114,11 @@
           </div>
 
         </el-collapse-transition>
+        <el-collapse-transition>
+          <div v-show="showBuildLogs" class="u-ml4 u-mr4">
+            <el-input type="textarea" v-bind:value="buildLogs"  ></el-input>
+          </div>
+        </el-collapse-transition>
 
       </div>
       <div class="row" v-if="!loading && build">
@@ -117,11 +126,11 @@
         </div>
         <div class="col-12">
           <h3 class="u-text--center u-mt4">Build Preview</h3>
-
           <ba-build-preview ref="buildPreviewElement" :url="buildPreviewLink">
           </ba-build-preview>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -162,13 +171,15 @@ export default {
       dialogVisible: false,
       dialogAppleVisible: false,
       showBuildTechnicalDetails: false,
+      showBuildLogs: false,
       availableDistributionTracks,
       build: {},
       form: {
         selectedTrack: 'beta',
       },
       loadBuildTimerRef: null,
-      loadApplePromoteTimerRef: null
+      loadApplePromoteTimerRef: null,
+      buildLogs: null
     }
   },
   computed: {
@@ -183,9 +194,30 @@ export default {
     }
   },
   methods: {
+    getLogsForBuild () {
+      axios.get(config.builds_details + this.buildId + '/' + 'promote_events_logs')
+        .then((result) => {
+          let data = result.data
+          if (!data.success) {
+            this.$notify({
+              title: data.status,
+              message: 'Logs retrieval finished with internal error...',
+              type: 'error',
+              duration: 0
+            })
+          }
+          let logsAsText = ''
+          data.data.forEach(line => { logsAsText = logsAsText + line.timestamp + ' : ' + line.line + '\n' })
+          this.buildLogs = logsAsText
+        }
+      )
+    },
+
     promoteAppleBuild () {
       this.dialogAppleVisible = false
-      axios.post(config.builds_details + this.buildId + '/' + 'promote_apple', { track: this.form.selectedTrack })
+      axios.post(config.builds_details + this.buildId + '/' + 'promote_apple', {
+        track: this.form.selectedTrack
+      })
         .then(() => {
           this.$notify({
             title: 'Success',
@@ -204,7 +236,7 @@ export default {
       this.dialogVisible = false
       this.waitingAndroidPromoteCompleted = true
       this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : QUEUED ' + this.form.selectedTrack
-      axios.post(config.builds_details + this.buildId + '/' + 'promote', { play_market_track: this.form.selectedTrack })
+      axios.post(config.builds_details + this.buildId + '/' + 'promote_android', { play_market_track: this.form.selectedTrack })
         .then(() => {
           this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : SUCCESS ' + this.form.selectedTrack
           this.waitingAndroidPromoteCompleted = false
@@ -229,7 +261,7 @@ export default {
             duration: 0
           })
         }
-      )
+      ).finally(() => { this.getLogsForBuild() })
     },
     invalidateBuildStatus () {
       this.$refs.buildPreviewElement.invalidateIframe()
@@ -241,7 +273,8 @@ export default {
         })
     },
     loadApplePromoteDetails () {
-      axios.get(config.builds_details + this.buildId + '/' + 'promote_apple', { track: this.form.selectedTrack })
+      this.getLogsForBuild()
+      axios.get(config.builds_details + this.buildId + '/' + 'promote', { track: this.form.selectedTrack })
         .then((result) => {
           let data = result.data
           if (!data.success) {
@@ -261,7 +294,7 @@ export default {
           }
 
           data = data[0]
-          if (['LOCKED', 'QUEUED'].indexOf(data.status) !== -1) {
+          if (['IN PROGRESS', 'QUEUED'].indexOf(data.status) !== -1) {
             this.previousApplePromoteStatus = data.status
             this.waitingPromoteCompleted = true
             this.loadApplePromoteTimerRef = setTimeout(this.loadApplePromoteDetails, 15000)
@@ -280,6 +313,7 @@ export default {
         })
     },
     loadBuild () {
+      this.getLogsForBuild()
       if (this.build.status && ['queued', 'IN_PROGRESS'].indexOf(this.build.status) === -1) {
         this.loading = false
         return
@@ -316,6 +350,7 @@ export default {
     this.initBuildStatus = null
     this.loadBuild()
     this.loadApplePromoteDetails()
+//    this.getLogsForBuild()
   },
   beforeDestroy () {
     clearTimeout(this.loadBuildTimerRef)
