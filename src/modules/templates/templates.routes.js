@@ -2,7 +2,7 @@ import Page from './templates.page.vue'
 
 let routes = [
   {
-    path: '/templates',
+    path: 'templates',
     name: 'templates',
     component: Page
   }

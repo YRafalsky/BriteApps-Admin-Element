@@ -1,11 +1,11 @@
 import Page from './content.page.vue'
 
-let buildsRoutes = [
+let routes = [
   {
-    path: '/content',
+    path: 'content',
     name: 'content',
     component: Page
   }
 ]
 
-export default buildsRoutes
+export default routes

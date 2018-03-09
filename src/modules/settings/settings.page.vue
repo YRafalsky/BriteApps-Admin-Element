@@ -143,10 +143,12 @@ export default {
     }
   },
   data () {
-    this.load()
+    let companyId = this.$route.params.companyId
+    this.load({companyId})
     return {
       searchFilter: '',
-      sectionInViewport: null
+      sectionInViewport: null,
+      companyId,
     }
   },
   created () {

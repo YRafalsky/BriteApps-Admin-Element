@@ -32,6 +32,7 @@ export default {
   name: 'ba-new-build',
   data () {
     return {
+      companyId: this.$route.params.companyId,
       loading: false,
       commitId: '',
       useCustomCommitId: false,
@@ -42,7 +43,7 @@ export default {
       this.loading = true
 
       let commitId = this.useCustomCommitId ? this.commitId : ''
-      axios.post(config.build_mobile_app, {commit_id: commitId})
+      axios.post(`${config.url}/company/${this.companyId}/build-mobile-app/`, {commit_id: commitId})
         .then(response => {
           this.$notify({
             title: 'Success',

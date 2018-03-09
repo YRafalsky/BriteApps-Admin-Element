@@ -1,25 +1,27 @@
 <template>
   <div class="dashboard-root">
-    <ba-header></ba-header>
+    <ba-header active-module="dashboard"></ba-header>
     <div class="u-pt4"></div>
     <div class="u-pt4"></div>
-    <h2 class="u-text--center u-header-padding"> {{user.company.name}}</h2>
+    <h2 class="u-text--center u-header-padding"> {{companyNameById(companyId)}}</h2>
     <div class="u-text--sm u-text--center">Welcome {{user.username}}</div>
 
   </div>
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 
 export default {
   name: 'ba-dashboard',
   components: {},
   data () {
-    return {}
+    let companyId = this.$route.params.companyId
+    return {companyId}
   },
   computed: {
-    ...mapState('login', ['user'])
+    ...mapState('shared', ['user']),
+    ...mapGetters('shared', ['companyNameById']),
   },
 }
 </script>

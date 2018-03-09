@@ -2,10 +2,10 @@ import DashboardPage from './dashboard.page.vue'
 
 let dashboardRoutes = [
   {
-    path: '/dashboard',
+    path: '',
     name: 'dashboard',
     component: DashboardPage
-  }
+  },
 ]
 
 export default dashboardRoutes

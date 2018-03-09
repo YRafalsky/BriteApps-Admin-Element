@@ -17,14 +17,13 @@
 </template>
 
 
-</template>
-
 <script>
 import axios from 'axios'
 import config from '@/config'
 
 export default {
-  name: 'AndroidVersionList',
+  name: 'ba-android-version-list',
+  props: ['companyId'],
   data () {
     return {
       loading: true,
@@ -44,11 +43,13 @@ export default {
     loadAndroidPromotesState () {
       this.loading = true
       clearTimeout(this.loadAndroidTimerRef)
-      axios.get(config.android_promotes)
+      axios.get(`${config.url}/company/${this.companyId}/promoted/android`)
         .then(response => {
           this.builds = response.data
-          this.loading = false
           this.loadAndroidTimerRef = setTimeout(this.loadAndroidPromotesState, 60000)
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
   },

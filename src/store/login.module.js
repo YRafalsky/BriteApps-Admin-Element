@@ -8,7 +8,6 @@ const tokenKey = 'carrierToken'
 const loginModule = {
   namespaced: true,
   state: {
-    user: null,
     token: localStorage.getItem(tokenKey)
   },
   mutations: {
@@ -20,16 +19,12 @@ const loginModule = {
         localStorage.removeItem(tokenKey)
         state.token = null
       }
-
     },
-    updateUser(state, payload) {
-      state.user = payload
-    }
   },
   actions: {
     logout: function (context, payload) {
       console.log('logout...')
-      context.commit('updateUser', null)
+      context.commit('shared/updateUser', null)
       context.commit('updateToken', null)
 
       router.push({name: 'login'})
@@ -57,7 +52,8 @@ const loginModule = {
           // success
           context.commit('updateToken', response.data.token)
 
-          context.commit('updateUser', response.data.data)
+          context.commit('shared/updateUser', response.data.data, {root:true})
+
 
           resolve(response)
         })
@@ -76,8 +72,7 @@ const loginModule = {
               if (isFailed(response)) {
                 context.commit('updateToken', null)
               }
-
-              context.commit('updateUser', response.data.data)
+              context.commit('shared/updateUser', response.data.data, {root:true})
               resolve()
             },
             (response) => {
