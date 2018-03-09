@@ -54,18 +54,12 @@
                     </div>
                 </template>
             </el-table-column>
-
-
         </el-table>
         <h3 class="c-heading u-text--center" v-if="builds && builds.length === 0">
             There are no builds to show yet...
         </h3>
         <div v-if="builds" class="u-text--sm u-text--light u-text--right">50 latest builds shown</div>
-
-
     </div>
-
-
 </template>
 
 <script>
