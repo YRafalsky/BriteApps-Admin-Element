@@ -63,7 +63,6 @@ const contentModule = {
         }
         console.log('data', data)
         let promise = axios.post(`${config.url}/company/${payload.companyId}/get_carrier_content/`, data)
-        
         promise.then((response) => {
           if (isFailed(response)) {
             reject(response)

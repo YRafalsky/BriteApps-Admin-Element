@@ -19,14 +19,12 @@ const loginModule = {
         localStorage.removeItem(tokenKey)
         state.token = null
       }
-
     },
-
   },
   actions: {
     logout: function (context, payload) {
       console.log('logout...')
-      context.commit('updateUser', null)
+      context.commit('shared/updateUser', null)
       context.commit('updateToken', null)
 
       router.push({name: 'login'})
@@ -65,9 +63,6 @@ const loginModule = {
       })
     },
     init: function (context, payload) {
-
-      console.log('init')
-
       let token = context.state.token
       return new Promise((resolve) => { //after login init done resolve promise in ANY case
           axios.post(config.get_carrier_user, { //recheck token
@@ -77,7 +72,6 @@ const loginModule = {
               if (isFailed(response)) {
                 context.commit('updateToken', null)
               }
-              console.log('emmiting update')
               context.commit('shared/updateUser', response.data.data, {root:true})
               resolve()
             },
