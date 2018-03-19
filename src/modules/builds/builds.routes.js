@@ -4,17 +4,17 @@ import BuildDetailPage from './build-details.page.vue'
 
 let buildsRoutes = [
   {
-    path: '/builds',
+    path: 'builds',
     name: 'builds',
     component: RootPage
   },
   {
-    path: '/new-build',
+    path: 'new-build',
     name: 'new-build',
     component: NewBuildPage
   },
   {
-    path: '/build-details/:buildId',
+    path: 'build-details-:buildId',
     name: 'build-details',
     component: BuildDetailPage
   },

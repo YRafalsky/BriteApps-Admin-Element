@@ -76,7 +76,9 @@ export default {
     BaPageWithSidebar,
   },
   data () {
-    this.load()
+    let companyId = this.$route.params.companyId
+
+    this.load({companyId})
     return {
       searchFilter: '',
       selectedLanguage: null,

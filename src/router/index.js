@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Interceptor from '@/router/router.interceptor'
+
 import LoginRoutes from '@/modules/login/login.routes'
 import DashboardRoutes from '@/modules/dashboard/dashboard.routes'
 import BuildRoutes from '@/modules/builds/builds.routes'
@@ -8,54 +10,37 @@ import ContentRoutes from '@/modules/content/content.routes'
 import AppearanceRoutes from '@/modules/appearance/appearance.routes'
 import TemplatesRoutes from '@/modules/templates/templates.routes'
 
-import store from '@/store'
+import CompanySelectPage from '@/modules/dashboard/company-select.page'
+import CompanyRootPage from '@/modules/dashboard/company-root.page'
 
 Vue.use(Router)
 
 let router = new Router({
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'HelloWorld',
-    //   component: HelloWorld
-    // },
     ...LoginRoutes,
-    ...DashboardRoutes,
-    ...BuildRoutes,
-    ...SettingsRoutes,
-    ...ContentRoutes,
-    ...AppearanceRoutes,
-    ...TemplatesRoutes,
+    {
+      path: '/company-select',
+      name: 'company-select',
+      component: CompanySelectPage
+    },
+    {
+      path: '/company/:companyId',
+      component: CompanyRootPage,
+      children: [
+        ...DashboardRoutes,
+        ...BuildRoutes,
+        ...SettingsRoutes,
+        ...ContentRoutes,
+        ...AppearanceRoutes,
+        ...TemplatesRoutes,
+      ]
+    },
+  
+  
   ],
   mode: 'history',
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.name === null) {
-    next('/dashboard')
-  }
-
-  if (to.name === 'login') {
-    next()
-  }
-
-  if (store.state.login.token === null) {
-    console.log('Not allowed to go to the route for unathorized person')
-    next('/login')
-  } else {
-    if (store.state.login.user === null) {
-      console.log('user is null')
-      store.dispatch('login/init')
-        .then(() => {
-          console.log('Init complete', store.state.login.user)
-          next()
-        },
-        )
-        .catch(() => next('/login'))
-    } else {
-      next()
-    }
-  }
-})
+Interceptor.attach(router)
 
 export default router

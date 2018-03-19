@@ -36,15 +36,18 @@ export default {
         return
       }
 
+      let companyId = this.$route.params.companyId
       let payload = {
         oldValue,
         newValue,
-        content: this.content
+        content: this.content,
+        companyId,
       }
       this.contentValue = newValue
+
       this.saveSingleContent(payload)
         .then(repsonse => {
-          this.$message({
+          this.$notify({
             message: 'Content saved successfully',
             type: 'success'
           })

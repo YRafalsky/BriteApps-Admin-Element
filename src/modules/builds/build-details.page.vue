@@ -5,7 +5,7 @@
       <div class="u-pt4"></div>
       <div class="u-pt4"></div>
       <h2 class="u-text--center">Build {{ humanBuildId }} Details</h2>
-      <android-version-list class="u-text--center u-mb2" ref="androidVersionListElement"></android-version-list>
+      <ba-android-version-list :companyId="companyId" class="u-text--center u-mb2" ref="androidVersionListElement"></ba-android-version-list>
       <div class="controls-container u-text--center">
         <el-button  icon="el-icon-refresh" @click="invalidateBuildStatus()">Invalidate Status</el-button>
       </div>
@@ -153,10 +153,11 @@ export default {
   components: {
     ElTag,
     'ba-build-preview': BuildPreview,
-    'android-version-list': AndroidVersionList
+    'ba-android-version-list': AndroidVersionList
   },
   data () {
     let buildId = this.$route.params.buildId
+    let companyId = this.$route.params.companyId
     let availableDistributionTracks = ['beta', 'production']
     return {
       initBuildPreviewLink: null,
@@ -179,7 +180,8 @@ export default {
       },
       loadBuildTimerRef: null,
       loadApplePromoteTimerRef: null,
-      buildLogs: null
+      buildLogs: null,
+      companyId,
     }
   },
   computed: {
@@ -215,9 +217,7 @@ export default {
 
     promoteAppleBuild () {
       this.dialogAppleVisible = false
-      axios.post(config.builds_details + this.buildId + '/' + 'promote_apple', {
-        track: this.form.selectedTrack
-      })
+      axios.post(config.builds_details + this.buildId + '/' + 'promote/apple', { track: this.form.selectedTrack })
         .then(() => {
           this.$notify({
             title: 'Success',
@@ -228,6 +228,9 @@ export default {
           this.loadApplePromoteDetails()
         })
     },
+    updateAndroidBuildCaption: function (s) {
+      this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + s + ' ' + this.form.selectedTrack
+    },
     promoteBuild () {
       this.$notify({
         title: 'Uploading to Play Market...',
@@ -235,11 +238,10 @@ export default {
       })
       this.dialogVisible = false
       this.waitingAndroidPromoteCompleted = true
-      this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : QUEUED ' + this.form.selectedTrack
-      axios.post(config.builds_details + this.buildId + '/' + 'promote_android', { play_market_track: this.form.selectedTrack })
+      this.updateAndroidBuildCaption('QUEUED')
+      axios.post(config.builds_details + this.buildId + '/' + 'promote/android', { play_market_track: this.form.selectedTrack })
         .then(() => {
-          this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : SUCCESS ' + this.form.selectedTrack
-          this.waitingAndroidPromoteCompleted = false
+          this.updateAndroidBuildCaption('SUCCESS')
           this.$refs.androidVersionListElement.loadAndroidPromotesState() // trigger version refresh
           this.$notify({
             title: 'Success',
@@ -248,8 +250,7 @@ export default {
           })
         }).catch(
         (error) => {
-          this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : FAILURE ' + this.form.selectedTrack
-          this.waitingAndroidPromoteCompleted = false
+          this.updateAndroidBuildCaption('FAILURE')
           let message = error.response.data && error.response.data.failure_message
             ? error.response.data.failure_message : 'Google Play Version Update failed...'
           let title = error.response.data && error.response.data.failure
@@ -261,7 +262,11 @@ export default {
             duration: 0
           })
         }
-      ).finally(() => { this.getLogsForBuild() })
+      )
+      .finally(() => {
+        this.waitingAndroidPromoteCompleted = false
+        this.getLogsForBuild()
+      })
     },
     invalidateBuildStatus () {
       this.$refs.buildPreviewElement.invalidateIframe()
@@ -274,7 +279,7 @@ export default {
     },
     loadApplePromoteDetails () {
       this.getLogsForBuild()
-      axios.get(config.builds_details + this.buildId + '/' + 'promote', { track: this.form.selectedTrack })
+      axios.get(config.builds_details + this.buildId + '/promote/apple', { track: this.form.selectedTrack })
         .then((result) => {
           let data = result.data
           if (!data.success) {
