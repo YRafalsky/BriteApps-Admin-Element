@@ -10,7 +10,9 @@
       </div>
 
     </h4>
-    <div v-for="setting in section.settings" v-if="isCollapsed" class="setting-section__settings single-setting u-mb4">
+    <div v-for="setting in section.settings"
+         :key="setting.id"
+         v-if="isCollapsed" class="setting-section__settings single-setting u-mb4">
       <ba-single-setting :setting="setting"></ba-single-setting>
     </div>
 
