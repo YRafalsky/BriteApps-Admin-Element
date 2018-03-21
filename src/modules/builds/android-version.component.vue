@@ -51,7 +51,7 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
+    }
   },
   beforeMount () {
     this.loadAndroidPromotesState()

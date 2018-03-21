@@ -21,7 +21,7 @@
         </div>
         <div class="google-play-promote u-text--center u-mt4">
 
-          <el-button v-loading="waitingAndroidPromoteCompleted" @click="dialogVisible = true" type="success" :disabled="waitingAndroidPromoteCompleted" element-loading-background="rgba(0, 0, 0, 0.1)">
+          <el-button v-loading="waitingAndroidPromoteCompleted" @click="dialogVisible = true" type="success" :disabled="googlePromoteMenuButtonDisabled" element-loading-background="rgba(0, 0, 0, 0.1)">
             <icon name="android"></icon>
             <span class="u-ml1">{{promoteAndroidButtonCaption}}</span>
           </el-button>
@@ -88,7 +88,7 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                      <el-button @click="dialogVisible = false">Cancel</el-button>
-                     <el-button type="primary" @click="promoteBuild()" :disabled="form.selectedTrack=='production' && !form.reallySure">Confirm</el-button>
+                     <el-button type="primary" @click="promoteAndroidBuild()" :disabled="form.selectedTrack=='production' && !form.reallySure">Confirm</el-button>
                 </span>
             </el-dialog>
 
@@ -193,6 +193,27 @@ export default {
     },
     humanBuildId () {
       return this.build ? this.build.version + '.' + this.build.build_number : 'UNDEFINED'
+    },
+    googlePromoteMenuButtonDisabled () {
+      function getIntVersionFromHumanReadable (humanReadable) {
+        if (humanReadable==null) {
+          return null
+        }
+        let splitted = humanReadable.split('.')
+        return parseInt(splitted[1], 10) * 100 + '.' + parseInt(splitted[2], 10)
+      }
+      if (this.waitingAndroidPromoteCompleted) {
+        return true  // waiting till promotion ends its work
+      }
+      if (!this.build || !this.build.version.length || !this.build.build_number) {
+        return true  // invalid build numbers, no promotion available in this case
+      }
+      let integerBuildVersion = parseInt(this.build.version.split('.')[1], 10) * 100 + '.' + this.build.build_number
+      let intBetaBuild = getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.beta)
+      let intProdBuild = getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.production)
+      return !((intBetaBuild == null && intProdBuild == null) ||
+        (intBetaBuild != null && integerBuildVersion > intBetaBuild) ||
+        (intProdBuild != null && integerBuildVersion > intProdBuild))
     }
   },
   methods: {
@@ -231,7 +252,7 @@ export default {
     updateAndroidBuildCaption: function (s) {
       this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + s + ' ' + this.form.selectedTrack
     },
-    promoteBuild () {
+    promoteAndroidBuild () {
       this.$notify({
         title: 'Uploading to Play Market...',
         message: 'Promotion to Google Play started...',
@@ -251,10 +272,10 @@ export default {
         }).catch(
         (error) => {
           this.updateAndroidBuildCaption('FAILURE')
-          let message = error.response.data && error.response.data.failure_message
-            ? error.response.data.failure_message : 'Google Play Version Update failed...'
-          let title = error.response.data && error.response.data.failure
-            ? 'Failure: ' + error.response.data.failure : 'FAILURE'
+          let message = error.response.data && error.response.data.message_details
+            ? error.response.data.message_details : 'Google Play Version Update failed...'
+          let title = error.response.data && error.response.data.message
+            ? 'Failure: ' + error.response.data.message : 'FAILURE'
           this.$notify({
             title: title,
             message: message,
