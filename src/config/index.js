@@ -18,6 +18,7 @@ config.get_carrier_user = config.url + '/get_carrier_user/'
 
 config.list_builds_per_company = config.url + '/builds/'
 config.builds_details = config.url + '/build/'
+config.desktop_builds_details = config.url + '/desktop-build/'
 
 
 export default config
