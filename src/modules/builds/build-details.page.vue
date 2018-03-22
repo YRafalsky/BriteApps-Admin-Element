@@ -77,18 +77,19 @@
 
                     <div class="u-mb2">Distribution Track:</div>
                     <el-form-item >
-                        <el-select v-model="form.selectedTrack">
-                            <el-option v-for="track in availableDistributionTracks" :key="track" :label="track" :value="track"></el-option>
+                        <el-select v-model="form.selectedGoogleTrack">
+                            <el-option v-for="track in googleAvailableDistributionTracks" :key="
+" :label="track" :value="track"></el-option>
                         </el-select>
                     </el-form-item>
-                     <el-form-item v-if="form.selectedTrack=='production'" class="u-mt5" >
+                     <el-form-item v-if="form.selectedGoogleTrack=='production'" class="u-mt5" >
                         <div class="u-text--light">Please confirm your action bellow:</div>
                         <el-checkbox v-model="form.reallySure" auto-complete="off">Yes, I know what I'm doing.</el-checkbox>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                      <el-button @click="dialogVisible = false">Cancel</el-button>
-                     <el-button type="primary" @click="promoteAndroidBuild()" :disabled="form.selectedTrack=='production' && !form.reallySure">Confirm</el-button>
+                     <el-button type="primary" @click="promoteAndroidBuild()" :disabled="form.selectedGoogleTrack=='production' && !form.reallySure">Confirm</el-button>
                 </span>
             </el-dialog>
 
@@ -176,7 +177,8 @@ export default {
       availableDistributionTracks,
       build: {},
       form: {
-        selectedTrack: 'beta',
+        selectedGoogleTrack: 'beta',
+        selectedAppleTrack: 'beta'
       },
       loadBuildTimerRef: null,
       loadApplePromoteTimerRef: null,
@@ -194,29 +196,62 @@ export default {
     humanBuildId () {
       return this.build ? this.build.version + '.' + this.build.build_number : 'UNDEFINED'
     },
-    googlePromoteMenuButtonDisabled () {
-      function getIntVersionFromHumanReadable (humanReadable) {
-        if (humanReadable==null) {
-          return null
-        }
-        let splitted = humanReadable.split('.')
-        return parseInt(splitted[1], 10) * 100 + '.' + parseInt(splitted[2], 10)
+    integerBuildVersion () {
+      if (!this.build || !this.build.version.length || !this.build.build_number) {
+        return null  // invalid build numbers, no promotion available in this case
       }
+      return parseInt(this.build.version.split('.')[1], 10) * 100 + '.' + this.build.build_number
+    },
+    googleIntegerBetaVersion () {
+      return this.getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.beta)
+    },
+    googleIntegerProdVersion () {
+      return this.getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.production)
+    },
+    googleTracksVersionsValid () {
+      return this.$refs.androidVersionListElement.dataValid
+    },
+    googleBetaPromotePossible () {
+      return !(
+        (!this.googleTracksVersionsValid || this.integerBuildVersion == null) ||
+        (this.googleIntegerBetaVersion !== null && this.integerBuildVersion <= this.googleIntegerBetaVersion) ||
+        (this.googleIntegerProdVersion !== null && this.integerBuildVersion <= this.googleIntegerProdVersion)
+      )
+    },
+    googleProdPromotePossible () {
+      return !(
+        (!this.googleTracksVersionsValid || this.integerBuildVersion == null) ||
+        (this.googleIntegerProdVersion !== null && this.integerBuildVersion <= this.googleIntegerProdVersion)
+      )
+    },
+    googlePromoteMenuButtonDisabled () {
       if (this.waitingAndroidPromoteCompleted) {
         return true  // waiting till promotion ends its work
       }
-      if (!this.build || !this.build.version.length || !this.build.build_number) {
-        return true  // invalid build numbers, no promotion available in this case
+      return !(this.googleBetaPromotePossible || this.googleProdPromotePossible)
+    },
+    googleAvailableDistributionTracks () {
+      let a = []
+      if (this.googleBetaPromotePossible) {
+        a.push('beta')
       }
-      let integerBuildVersion = parseInt(this.build.version.split('.')[1], 10) * 100 + '.' + this.build.build_number
-      let intBetaBuild = getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.beta)
-      let intProdBuild = getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.production)
-      return !((intBetaBuild == null && intProdBuild == null) ||
-        (intBetaBuild != null && integerBuildVersion > intBetaBuild) ||
-        (intProdBuild != null && integerBuildVersion > intProdBuild))
+      if (this.googleProdPromotePossible) {
+        a.push('production')
+      }
+      if (a.indexOf(this.form.selectedGoogleTrack) === -1) {
+        this.form.selectedGoogleTrack = a.length ? a[0] : null
+      }
+      return a
     }
   },
   methods: {
+    getIntVersionFromHumanReadable (humanReadable) {
+      if (humanReadable==null) {
+        return null
+      }
+      let splitted = humanReadable.split('.')
+      return parseInt(splitted[1], 10) * 100 + '.' + parseInt(splitted[2], 10)
+    },
     getLogsForBuild () {
       axios.get(config.builds_details + this.buildId + '/' + 'promote_events_logs')
         .then((result) => {

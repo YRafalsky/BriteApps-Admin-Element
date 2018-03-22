@@ -28,7 +28,8 @@ export default {
     return {
       loading: true,
       builds: {},
-      loadAndroidTimerRef: null
+      loadAndroidTimerRef: null,
+      dataValid: false
     }
   },
   computed: {
@@ -46,7 +47,11 @@ export default {
       axios.get(`${config.url}/company/${this.companyId}/promoted/android`)
         .then(response => {
           this.builds = response.data
+          this.dataValid = true
           this.loadAndroidTimerRef = setTimeout(this.loadAndroidPromotesState, 60000)
+        })
+        .catch(response => {
+          this.dataValid = false
         })
         .finally(() => {
           this.loading = false
