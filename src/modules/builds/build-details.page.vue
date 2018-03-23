@@ -285,7 +285,7 @@ export default {
         })
     },
     updateAndroidBuildCaption: function (s) {
-      this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + s + ' ' + this.form.selectedTrack
+      this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + s + ' ' + this.form.selectedGoogleTrack
     },
     promoteAndroidBuild () {
       this.$notify({
@@ -295,10 +295,9 @@ export default {
       this.dialogVisible = false
       this.waitingAndroidPromoteCompleted = true
       this.updateAndroidBuildCaption('QUEUED')
-      axios.post(config.builds_details + this.buildId + '/' + 'promote/android', { play_market_track: this.form.selectedTrack })
+      axios.post(config.builds_details + this.buildId + '/' + 'promote/android', { play_market_track: this.form.selectedGoogleTrack })
         .then(() => {
           this.updateAndroidBuildCaption('SUCCESS')
-          this.$refs.androidVersionListElement.loadAndroidPromotesState() // trigger version refresh
           this.$notify({
             title: 'Success',
             message: 'Google Play Version Successfully Updated...',
@@ -320,6 +319,7 @@ export default {
         }
       )
       .finally(() => {
+        this.$refs.androidVersionListElement.loadAndroidPromotesState() // trigger version refresh
         this.waitingAndroidPromoteCompleted = false
         this.getLogsForBuild()
       })
