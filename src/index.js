@@ -28,7 +28,6 @@ Vue.use(ElementUI)
 
 Vue.use(moment)
 
-// Vue.component('ba-ace-editor', AceEditor)
 Vue.component('ba-header', Header)
 Vue.component('ba-status-label', BuildStatusLabel)
 

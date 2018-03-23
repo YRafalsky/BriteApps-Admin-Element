@@ -41,8 +41,6 @@
         <div class="col-12">
           <h3 class="u-text--center u-mt4">Build Preview</h3>
             <a :href="buildPreviewLink" target="_blank" class="desktop__preview-link u-m4 c-heading__section u-text--center">Open In Separate Tab</a>
-          <!--<ba-build-preview ref="buildPreviewElement" :url="buildPreviewLink">-->
-          <!--</ba-build-preview>-->
         </div>
       </div>
     </div>
@@ -55,13 +53,7 @@ import axios from 'axios'
 
 import config from '@/config'
 
-import BuildPreview from './build-preview.component.vue'
 import ElTag from 'element-ui/packages/tag/src/tag'
-import AndroidVersionList from './android-version.component'
-
-let promoteAppleBuildBaseCaption = 'Send to Apple for Approval'
-
-let promoteAndroidBuildBaseCaption = 'Send to Google'
 
 export default {
   components: {
@@ -74,21 +66,15 @@ export default {
       loading: true,
       loadingStatus: false,
       buildId,
-      dialogVisible: false,
-      dialogAppleVisible: false,
       showBuildTechnicalDetails: false,
       build: {},
       loadBuildTimerRef: null,
-      loadApplePromoteTimerRef: null,
       companyId,
     }
   },
   computed: {
     buildPreviewLink () {
       return this.build.aws_build_preview
-    },
-    ApkLink () {
-      return this.build.android_release_apk
     },
     humanBuildId () {
       return this.build ? this.build.version + '.' + this.build.build_number : 'UNDEFINED'
@@ -125,13 +111,6 @@ export default {
             this.loadBuildTimerRef = setTimeout(this.loadBuild, 15000)
           } else {
             this.loadingStatus = false
-            if (this.build.android_promotion_tracks !== null) {
-              this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : SUCCESS ' +
-                this.build.android_promotion_tracks
-            }
-            if (this.initBuildStatus !== null) {
-              this.$refs.buildPreviewElement.invalidateIframe()
-            }
           }
         })
         .finally(() => {
@@ -143,7 +122,6 @@ export default {
     this.loading = true
     this.initBuildStatus = null
     this.loadBuild()
-    this.loadApplePromoteDetails()
   },
   beforeDestroy () {
     clearTimeout(this.loadBuildTimerRef)

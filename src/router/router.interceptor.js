@@ -1,7 +1,6 @@
 import store from '@/store'
 
 function beforeEach (to, from, next) {
-  // console.log('router.beforeEach', to, from, next)
   if (to.name === null) {
     next('/company-select')
   }
