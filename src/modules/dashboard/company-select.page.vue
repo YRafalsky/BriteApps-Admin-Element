@@ -1,5 +1,5 @@
 <template>
-    <div class="company-select__root" v-loading="loading">
+    <div class="company-select__root">
         <ba-header :disableMenu="true"></ba-header>
         <div class="u-pt4"></div>
         <div class="u-pt4"></div>
