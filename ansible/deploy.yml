@@ -13,7 +13,7 @@
   remote_user: root
   tasks:
   - name: Go to the BriteApps-Admin-Element folder and execute rebuild.sh command
-    command: chdir=/srv/src/BriteApps-Admin-Element/ ./rebuild.sh
+    command: chdir=/root/{{enviroment_name}}/BriteApps-Admin-Element/ ./rebuild_{{enviroment_name}}.sh
     register: out
 
   - debug: var=out.stdout_lines

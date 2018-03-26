@@ -38,7 +38,7 @@ const settingsModule = {
         value: payload.newValue
       }
 
-      axios.post(config.set_carrier_setting, dataToSend)
+      axios.post(`${config.url}/company/${payload.companyId}/set_carrier_setting/`, dataToSend)
       console.log('payload', payload)
       if (setting.overridden) {
         setting.overridden.value = payload.newValue
@@ -57,7 +57,7 @@ const settingsModule = {
           token: localStorage.carrierToken
         }
         console.log('data', data)
-        let promise = axios.post(config.get_carrier_settings, data)
+        let promise = axios.post(`${config.url}/company/${payload.companyId}/get_carrier_settings/`, data)
 
         promise.then((response) => {
           if (isFailed(response)) {

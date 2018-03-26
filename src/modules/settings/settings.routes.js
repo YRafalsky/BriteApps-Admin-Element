@@ -1,11 +1,11 @@
 import Page from './settings.page.vue'
 
-let buildsRoutes = [
+let routes = [
   {
-    path: '/settings',
+    path: 'settings',
     name: 'settings',
     component: Page
   }
 ]
 
-export default buildsRoutes
+export default routes

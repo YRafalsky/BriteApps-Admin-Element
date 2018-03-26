@@ -68,6 +68,7 @@ export default {
           isLoading: false
         },
       ],
+      companyId: this.$route.params.companyId,
     }
   },
   methods: {
@@ -90,7 +91,7 @@ export default {
           fileName: file.name,
         }
         image.isLoading = true
-        axios.post(config.url + '/image/' + image.slug + '/', {...uploaded})
+        axios.post(`${config.url}/company/${this.companyId}/image/${image.slug}/`, {...uploaded})
           .then(() => {
             this.$notify({
               title: 'Success',

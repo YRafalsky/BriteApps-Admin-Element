@@ -110,6 +110,7 @@ export default {
         let payload = {
           setting: this.setting,
           newValue: value.toString(),
+          companyId: this.$route.params.companyId,
           oldValue: this.settingValue.toString(),
         }
         this.updateSingleSetting(payload)
@@ -123,6 +124,7 @@ export default {
 
       let payload = {
         setting: this.setting,
+        companyId: this.$route.params.companyId,
         newValue: value,
         oldValue: this.settingValueClone,
       }
