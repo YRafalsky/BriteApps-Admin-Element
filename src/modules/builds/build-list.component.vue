@@ -11,7 +11,7 @@
                     width="180">
                 <template slot-scope="scope">
                     <a :href="'/build-details/' + scope.row.id" @click="$event.preventDefault()">
-                        <el-button @click="$router.push({ name: 'build-details', params: { buildId: scope.row.id}})">
+                        <el-button @click="$router.push({ name: 'build-details-' + mode, params: { buildId: scope.row.id}})">
                             Details
                         </el-button>
                     </a>
@@ -73,6 +73,18 @@
 
   export default {
     components: {ElButton, 'ba-android-version-list': AndroidVersionList},
+    props: {
+      mode: {
+        type: String,
+        default: 'mobile', // or 'desktop'
+
+      },
+    },
+    watch: {
+      mode: function (newVal, oldVal) { // watch it
+        this.loadBuilds()
+      }
+    },
     name: 'baBuildList',
     data () {
       return {
@@ -86,18 +98,30 @@
       }
     },
     computed: {
-      ...mapGetters('shared', ['isSuperuser'])
+      ...mapGetters('shared', ['isSuperuser']),
+      buildsUrl () {
+        if (this.mode === 'mobile') {
+          return '/builds/'
+        }
+        if (this.mode === 'desktop') {
+          return '/builds/desktop/'
+        }
+
+        console.warn('query param mode is not passed or has invalid value')
+        return '/builds/'
+      }
     },
     methods: {
       goLink (link) {
         router.push({path: link})
       },
       loadBuilds () {
+        clearTimeout(this.timerRef)
         this.loadingTable = true
-        let url = config.url + `/company/${this.companyId}/builds/`
+        let url = config.url + `/company/${this.companyId}${this.buildsUrl}`
 
         if (this.showAllBuilds) {
-          url = config.url + `/builds/`
+          url = config.url + this.buildsUrl
         }
         axios.get(url)
           .then(response => {

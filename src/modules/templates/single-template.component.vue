@@ -34,6 +34,9 @@ export default {
 
   props: ['template'],
   name: 'ba-single-template',
+  components: {
+    'ba-ace-editor': () => import('../../components/ace-editor.component.vue')
+  },
   data () {
     let contentValue = this.template.overridden ? this.template.overridden.text_content : this.template.text_content
 

@@ -124,6 +124,7 @@ export default {
 
       let payload = {
         setting: this.setting,
+        companyId: this.$route.params.companyId,
         newValue: value,
         oldValue: this.settingValueClone,
       }

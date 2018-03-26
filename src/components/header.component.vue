@@ -3,7 +3,7 @@
     <router-link to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
     </router-link>
-    <router-link v-if="!disableMenu" v-for="module in modules" :key="module.name" :to="module.link" class="nav__link" :class="{ 'nav__link--active' : activeModule === module.name }">
+    <router-link v-if="!disableMenu" v-for="module in modules" :key="module.name" :to="module.link"  class="nav__link" :class="{ 'nav__link--active' : activeModule === module.name }">
       <icon class="u-mr1" scale="0.75" :name="module.icon"></icon>
       {{ module.name }}
     </router-link>
@@ -27,9 +27,14 @@ export default {
     let companyId = this.$route.params.companyId
     let modules = [
       {
-        link: 'builds',
+        link: {name: 'builds', query: { mode: 'mobile' }},
         name: 'Builds',
         icon: 'rocket',
+      },
+      {
+        link: {name: 'builds', query: { mode: 'desktop' }},
+        name: 'Desktop Builds',
+        icon: 'desktop',
       },
       {
         link: 'settings',
