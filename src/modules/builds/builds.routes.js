@@ -1,6 +1,7 @@
 import RootPage from './build.page.vue'
 import NewBuildPage from './new-build.page.vue'
 import BuildDetailPage from './build-details.page.vue'
+import DesktopBuildDetailPage from './desktop-build-details.page'
 
 let buildsRoutes = [
   {
@@ -14,9 +15,14 @@ let buildsRoutes = [
     component: NewBuildPage
   },
   {
-    path: 'build-details-:buildId',
-    name: 'build-details',
+    path: 'build-details-mobile-:buildId',
+    name: 'build-details-mobile',
     component: BuildDetailPage
+  },
+  {
+    path: 'build-details-desktop-:buildId',
+    name: 'build-details-desktop',
+    component: DesktopBuildDetailPage
   },
 ]
 
