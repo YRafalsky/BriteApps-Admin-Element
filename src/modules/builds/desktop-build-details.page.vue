@@ -5,7 +5,6 @@
       <div class="u-pt4"></div>
       <div class="u-pt4"></div>
       <h2 class="u-text--center">Build {{ humanBuildId }} Details</h2>
-      <ba-android-version-list :companyId="companyId" class="u-text--center u-mb2" ref="androidVersionListElement"></ba-android-version-list>
       <div class="controls-container u-text--center">
         <el-button  icon="el-icon-refresh" @click="invalidateBuildStatus()">Invalidate Status</el-button>
       </div>
