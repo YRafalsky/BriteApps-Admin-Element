@@ -163,6 +163,7 @@ export default {
     return {
       initBuildPreviewLink: null,
       previousApplePromoteStatus: null,
+      previousAndroidPromoteStatus: null,
       loading: true,
       loadingStatus: false,
       waitingPromoteCompleted: false,
@@ -182,6 +183,7 @@ export default {
       },
       loadBuildTimerRef: null,
       loadApplePromoteTimerRef: null,
+      loadAndroidPromoteTimerRef: null,
       buildLogs: null,
       companyId,
     }
@@ -231,17 +233,17 @@ export default {
       return !(this.googleBetaPromotePossible || this.googleProdPromotePossible)
     },
     googleAvailableDistributionTracks () {
-      let a = []
+      let tracks = []
       if (this.googleBetaPromotePossible) {
-        a.push('beta')
+        tracks.push('beta')
       }
       if (this.googleProdPromotePossible) {
-        a.push('production')
+        tracks.push('production')
       }
-      if (a.indexOf(this.form.selectedGoogleTrack) === -1) {
-        this.form.selectedGoogleTrack = a.length ? a[0] : null
+      if (tracks.indexOf(this.form.selectedGoogleTrack) === -1) {
+        this.form.selectedGoogleTrack = tracks.length ? tracks[0] : null
       }
-      return a
+      return tracks
     }
   },
   methods: {
@@ -284,8 +286,8 @@ export default {
           this.loadApplePromoteDetails()
         })
     },
-    updateAndroidBuildCaption: function (s) {
-      this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + s + ' ' + this.form.selectedGoogleTrack
+    updateAndroidBuildCaption: function (status, track) {
+      this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + status + ' ' + track
     },
     promoteAndroidBuild () {
       this.$notify({
@@ -294,10 +296,11 @@ export default {
       })
       this.dialogVisible = false
       this.waitingAndroidPromoteCompleted = true
-      this.updateAndroidBuildCaption('QUEUED')
+      let targetTrack = this.form.selectedGoogleTrack
+      this.updateAndroidBuildCaption('QUEUED', targetTrack)
       axios.post(config.builds_details + this.buildId + '/' + 'promote/android', { play_market_track: this.form.selectedGoogleTrack })
         .then(() => {
-          this.updateAndroidBuildCaption('SUCCESS')
+          this.updateAndroidBuildCaption('SUCCESS', targetTrack)
           this.$notify({
             title: 'Success',
             message: 'Google Play Version Successfully Updated...',
@@ -305,7 +308,7 @@ export default {
           })
         }).catch(
         (error) => {
-          this.updateAndroidBuildCaption('FAILURE')
+          this.updateAndroidBuildCaption('FAILURE', targetTrack)
           let message = error.response.data && error.response.data.message_details
             ? error.response.data.message_details : 'Google Play Version Update failed...'
           let title = error.response.data && error.response.data.message
@@ -319,10 +322,13 @@ export default {
         }
       )
       .finally(() => {
-        this.$refs.androidVersionListElement.loadAndroidPromotesState() // trigger version refresh
+        this.invalidateAndroidTracksStatus() // trigger version refresh
         this.waitingAndroidPromoteCompleted = false
         this.getLogsForBuild()
       })
+    },
+    invalidateAndroidTracksStatus () {
+      this.$refs.androidVersionListElement.loadAndroidPromotesState()
     },
     invalidateBuildStatus () {
       this.$refs.buildPreviewElement.invalidateIframe()
@@ -331,6 +337,34 @@ export default {
         .then(response => {
           this.loading = false
           this.build = response.data
+        })
+    },
+    loadBuild () {
+      this.getLogsForBuild()
+      if (this.build.status && ['queued', 'IN_PROGRESS'].indexOf(this.build.status) === -1) {
+        this.loading = false
+        return
+      }
+      if (!this.loading) {
+        this.loadingStatus = true
+      }
+      axios.get(config.builds_details + this.buildId + '/')
+        .then(response => {
+          if (!this.loading) {
+            this.loadingStatus = false
+          }
+          this.loading = false
+          this.build = response.data
+          if (['queued', 'IN_PROGRESS'].indexOf(this.build.status) !== -1) {
+            this.loadingStatus = true
+            this.initBuildStatus = this.build.status
+            this.loadBuildTimerRef = setTimeout(this.loadBuild, 15000)
+          } else {
+            this.loadingStatus = false
+            if (this.initBuildStatus !== null) {
+              this.$refs.buildPreviewElement.invalidateIframe()
+            }
+          }
         })
     },
     loadApplePromoteDetails () {
@@ -373,36 +407,45 @@ export default {
           this.promoteAppleButtonCaption = promoteAppleBuildBaseCaption + ' : ' + data.status
         })
     },
-    loadBuild () {
+    loadAndroidPromoteDetails () {
       this.getLogsForBuild()
-      if (this.build.status && ['queued', 'IN_PROGRESS'].indexOf(this.build.status) === -1) {
-        this.loading = false
-        return
-      }
-      if (!this.loading) {
-        this.loadingStatus = true
-      }
-      axios.get(config.builds_details + this.buildId + '/')
-        .then(response => {
-          if (!this.loading) {
-            this.loadingStatus = false
+      axios.get(config.builds_details + this.buildId + '/promote/android')
+        .then((result) => {
+          let data = result.data
+          if (!data.success) {
+            this.$notify({
+              title: data.status,
+              message: 'PlayMarket promoting finished with internal error...',
+              type: 'error',
+              duration: 0
+            })
+            console.log('issue during loadAndroidPromoteDetails', result)
+            return
           }
-          this.loading = false
-          this.build = response.data
-          if (['queued', 'IN_PROGRESS'].indexOf(this.build.status) !== -1) {
-            this.loadingStatus = true
-            this.initBuildStatus = this.build.status
-            this.loadBuildTimerRef = setTimeout(this.loadBuild, 15000)
+          data = data.data
+          if (!data.length) {
+            console.log('no promote tasks in db')
+            return
+          }
+
+          data = data[0]
+          if (['IN PROGRESS', 'QUEUED'].indexOf(data.status) !== -1) {
+            this.previousAndroidPromoteStatus = data.status
+            this.waitingAndroidPromoteCompleted = true
+            this.loadAndroidPromoteTimerRef = setTimeout(this.loadAndroidPromoteDetails, 5000)
           } else {
-            this.loadingStatus = false
-            if (this.build.android_promotion_tracks !== null) {
-              this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : SUCCESS ' +
-                this.build.android_promotion_tracks
-            }
-            if (this.initBuildStatus !== null) {
-              this.$refs.buildPreviewElement.invalidateIframe()
+            this.waitingAndroidPromoteCompleted = false
+            if (this.previousAndroidPromoteStatus !== null) {
+              this.invalidateAndroidTracksStatus() // trigger version refresh
+              this.$notify({
+                title: data.status,
+                message: 'Play Market promoting finished...',
+                type: data.status === 'SUCCESS' ? 'success' : 'error',
+                duration: data.status === 'SUCCESS' ? 3000 : 0
+              })
             }
           }
+          this.updateAndroidBuildCaption(data.status, data.track)
         })
     },
   },
@@ -411,11 +454,12 @@ export default {
     this.initBuildStatus = null
     this.loadBuild()
     this.loadApplePromoteDetails()
-//    this.getLogsForBuild()
+    this.loadAndroidPromoteDetails()
   },
   beforeDestroy () {
     clearTimeout(this.loadBuildTimerRef)
     clearTimeout(this.loadApplePromoteTimerRef)
+    clearTimeout(this.loadAndroidPromoteTimerRef)
   }
 }
 </script>
