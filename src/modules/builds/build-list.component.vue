@@ -1,7 +1,7 @@
 <template>
     <div class="builds-list__component">
         <div class="loading" v-if="loading">Loading...</div>
-        <ba-android-version-list :companyId="companyId"></ba-android-version-list>
+        <ba-stores-version-list :companyId="companyId"></ba-stores-version-list>
 
         <el-checkbox v-if="isSuperuser" @change="loadBuilds()" v-model="showAllBuilds">Show builds for all companies</el-checkbox>
         <h4 v-if="builds && builds.length > 0"class="u-mt4" >Previous builds:</h4>
@@ -67,12 +67,12 @@
   import config from '@/config'
   import router from '@/router'
   import ElButton from 'element-ui/packages/button/src/button'
-  import AndroidVersionList from './android-version.component'
+  import StoresVersionList from './stores-version.component'
   import _ from 'lodash'
   import {mapGetters} from 'vuex'
 
   export default {
-    components: {ElButton, 'ba-android-version-list': AndroidVersionList},
+    components: {ElButton, 'ba-stores-version-list': StoresVersionList},
     props: {
       mode: {
         type: String,

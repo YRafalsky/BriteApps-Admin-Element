@@ -5,7 +5,7 @@
       <div class="u-pt4"></div>
       <div class="u-pt4"></div>
       <h2 class="u-text--center">Build {{ humanBuildId }} Details</h2>
-      <ba-android-version-list :companyId="companyId" class="u-text--center u-mb2" ref="androidVersionListElement"></ba-android-version-list>
+      <ba-stores-version-list :companyId="companyId" class="u-text--center u-mb2" ref="androidVersionListElement"></ba-stores-version-list>
       <div class="controls-container u-text--center">
         <el-button  icon="el-icon-refresh" @click="invalidateBuildStatus()">Invalidate Status</el-button>
       </div>
@@ -144,7 +144,7 @@ import config from '@/config'
 
 import BuildPreview from './build-preview.component.vue'
 import ElTag from 'element-ui/packages/tag/src/tag'
-import AndroidVersionList from './android-version.component'
+import StoresVersionList from './stores-version.component'
 
 let promoteAppleBuildBaseCaption = 'Send to Apple for Approval'
 
@@ -154,7 +154,7 @@ export default {
   components: {
     ElTag,
     'ba-build-preview': BuildPreview,
-    'ba-android-version-list': AndroidVersionList
+    'ba-stores-version-list': StoresVersionList
   },
   data () {
     let buildId = this.$route.params.buildId
@@ -202,18 +202,19 @@ export default {
       if (!this.build || !this.build.version.length || !this.build.build_number) {
         return null  // invalid build numbers, no promotion available in this case
       }
-      return parseInt(this.build.version.split('.')[1], 10) * 100 + '.' + this.build.build_number
+      return parseInt(this.build.version.split('.')[1], 10) * 100 + this.build.build_number
     },
     googleIntegerBetaVersion () {
-      return this.getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.beta)
+      return this.getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.androidBetaBuild)
     },
     googleIntegerProdVersion () {
-      return this.getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.builds.production)
+      return this.getIntVersionFromHumanReadable(this.$refs.androidVersionListElement.androidProdBuild)
     },
     googleTracksVersionsValid () {
       return this.$refs.androidVersionListElement.dataValid
     },
     googleBetaPromotePossible () {
+//      debugger
       return !(
         (!this.googleTracksVersionsValid || this.integerBuildVersion == null) ||
         (this.googleIntegerBetaVersion !== null && this.integerBuildVersion <= this.googleIntegerBetaVersion) ||
@@ -252,7 +253,7 @@ export default {
         return null
       }
       let splitted = humanReadable.split('.')
-      return parseInt(splitted[1], 10) * 100 + '.' + parseInt(splitted[2], 10)
+      return parseInt(splitted[1], 10) * 100 + parseInt(splitted[2], 10)
     },
     getLogsForBuild () {
       axios.get(config.builds_details + this.buildId + '/' + 'promote_events_logs')
