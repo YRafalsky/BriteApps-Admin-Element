@@ -57,7 +57,7 @@ export default {
       return this.builds && this.builds['Play Market'] && this.builds['Play Market'].beta? this.builds['Play Market'].beta: 'None'
     },
     appleProdBuild () {
-      return this.builds && this.builds['App Store'] && this.builds['App Store'].production? this.builds.production['App Store']: 'None'
+      return this.builds && this.builds['App Store'] && this.builds['App Store'].production? this.builds['App Store'].production: 'None'
     },
     appleBetaBuild () {
       return this.builds && this.builds['App Store'] && this.builds['App Store'].beta? this.builds['App Store'].beta: 'None'

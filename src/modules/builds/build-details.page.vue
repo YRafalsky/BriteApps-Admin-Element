@@ -276,6 +276,7 @@ export default {
 
     promoteAppleBuild () {
       this.dialogAppleVisible = false
+      this.waitingPromoteCompleted = true
       axios.post(config.builds_details + this.buildId + '/' + 'promote/apple', { track: this.form.selectedTrack })
         .then(() => {
           this.$notify({
@@ -283,9 +284,12 @@ export default {
             message: 'Apple Store promoting queued',
             type: 'success'
           })
-          this.waitingPromoteCompleted = true
           this.loadApplePromoteDetails()
         })
+        .catch(() => {
+          this.loadApplePromoteDetails()
+        }
+        )
     },
     updateAndroidBuildCaption: function (status, track) {
       this.promoteAndroidButtonCaption = promoteAndroidBuildBaseCaption + ' : ' + status + ' ' + track
@@ -368,7 +372,7 @@ export default {
           }
         })
     },
-    loadApplePromoteDetails () {
+    loadApplePromoteDetails (onPageLoad) {
       this.getLogsForBuild()
       axios.get(config.builds_details + this.buildId + '/promote/apple', { track: this.form.selectedTrack })
         .then((result) => {
@@ -386,6 +390,8 @@ export default {
           data = data.data
           if (!data.length) {
             console.log('no promote tasks in db')
+            this.waitingPromoteCompleted = false
+            this.promoteAppleButtonCaption = promoteAppleBuildBaseCaption
             return
           }
 
@@ -393,15 +399,20 @@ export default {
           if (['IN PROGRESS', 'QUEUED'].indexOf(data.status) !== -1) {
             this.previousApplePromoteStatus = data.status
             this.waitingPromoteCompleted = true
-            this.loadApplePromoteTimerRef = setTimeout(this.loadApplePromoteDetails, 15000)
+            this.loadApplePromoteTimerRef = setTimeout(this.loadApplePromoteDetails, 15000, onPageLoad)
           } else {
             this.waitingPromoteCompleted = false
-            if (this.previousApplePromoteStatus !== null) {
+            if (onPageLoad === null || onPageLoad === undefined) {
+              let message = data.event_result && data.event_result.message_details
+                ? data.event_result.message_details : 'App Store Version Update failed...'
+              let title = data.event_result && data.event_result.message
+                ? 'Failure: ' + data.event_result.message : 'FAILURE'
               this.$notify({
-                title: data.status,
-                message: 'Apple Store promoting finished...',
+                title: title,
+                message: message,
                 type: data.status === 'SUCCESS' ? 'success' : 'error',
-                duration: data.status === 'SUCCESS' ? 3000 : 0
+                duration: data.status === 'SUCCESS' ? 3000 : 0,
+                customClass: 'notifications-fixed'
               })
             }
           }
@@ -454,7 +465,7 @@ export default {
     this.loading = true
     this.initBuildStatus = null
     this.loadBuild()
-    this.loadApplePromoteDetails()
+    this.loadApplePromoteDetails(true)
     this.loadAndroidPromoteDetails()
   },
   beforeDestroy () {
@@ -467,6 +478,11 @@ export default {
 <style>
   .build-details__root  .el-loading-mask{
       z-index: 799;
+  }
+  .notifications-fixed {
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow: auto
   }
 
   .build__pre {
