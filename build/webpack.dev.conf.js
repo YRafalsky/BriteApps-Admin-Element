@@ -9,6 +9,7 @@ const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
+  mode: 'development',
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
@@ -36,6 +37,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
+    new webpack.LoaderOptionsPlugin({ options: {} }),
+  
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
@@ -48,6 +51,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       inject: true
     }),
+    new FriendlyErrorsPlugin(),
   ]
 })
 

@@ -1,10 +1,8 @@
-import Page from './templates.page.vue'
-
 let routes = [
   {
     path: 'templates',
     name: 'templates',
-    component: Page
+    component: () => import('./templates.page.vue')
   }
 ]
 
