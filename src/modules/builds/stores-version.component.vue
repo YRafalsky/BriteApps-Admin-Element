@@ -27,6 +27,12 @@
       v-loading="loading"
       style="min-width: 100px;"
       class="u-text--center"
+      type="success"
+      close-transition>IN-FLIGHT: {{appleInFlightBuild | capitalize}}</el-tag>
+    <el-tag
+      v-loading="loading"
+      style="min-width: 100px;"
+      class="u-text--center"
       type="primary"
       close-transition>BETA: {{appleBetaBuild | capitalize}}</el-tag>
   </div>
@@ -58,6 +64,9 @@ export default {
     },
     appleProdBuild () {
       return this.builds && this.builds['App Store'] && this.builds['App Store'].production? this.builds['App Store'].production: 'None'
+    },
+    appleInFlightBuild () {
+      return this.builds && this.builds['App Store'] && this.builds['App Store']['in-flight']? this.builds['App Store']['in-flight']: 'None'
     },
     appleBetaBuild () {
       return this.builds && this.builds['App Store'] && this.builds['App Store'].beta? this.builds['App Store'].beta: 'None'
