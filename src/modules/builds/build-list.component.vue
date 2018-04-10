@@ -1,7 +1,7 @@
 <template>
     <div class="builds-list__component">
         <div class="loading" v-if="loading">Loading...</div>
-        <ba-android-version-list :companyId="companyId"></ba-android-version-list>
+        <ba-android-version-list v-if="mode == 'mobile'" :companyId="companyId"></ba-android-version-list>
 
         <el-checkbox v-if="isSuperuser" @change="loadBuilds()" v-model="showAllBuilds">Show builds for all companies</el-checkbox>
         <h4 v-if="builds && builds.length > 0"class="u-mt4" >Previous builds:</h4>

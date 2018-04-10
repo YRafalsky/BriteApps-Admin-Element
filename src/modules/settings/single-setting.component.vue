@@ -1,15 +1,18 @@
 <template>
   <div :class="{ 'c-disabled-block' : readonly }">
     <div class="c-disabled-block__message" v-if="readonly">
-      <icon class="u-mr2" :name="'exclamation-triangle'"></icon>
+      <icon class="u-mr2" name="exclamation-triangle"></icon>
       Setting is 'Read Only'. Please contact BriteApps team for assitance.
     </div>
-
       <div class="single-setting__title u-mb1">
         <div class="single-setting__name">
           {{setting.name}} <em class="u-text--sm u-text--light u-ml3">{{setting.section.slug}}.{{setting.slug}}</em>
         </div>
       </div>
+    <div class="u-mt2 c-disabled-block__message" v-if="(carrierAccess === 'N' || carrierAccess === 'R' ) && user.is_superuser">
+      <icon class="u-mr2" name="lock"></icon>
+      Setting for administrators Only.
+    </div>
       <div class="single-setting__value u-mb4">
         <div class="setting--boolean" v-if="setting.stype === 'BLN'">
           <el-switch :disabled="readonly" v-model="settingValue"></el-switch>
@@ -37,8 +40,8 @@
                             end: '23:30'
                           }"></el-time-select>
       </div>
-
       <div class="u-mt4">
+
         <!--{{setting.default}}-->
       </div>
     </div>
@@ -46,7 +49,7 @@
 </template>
 
 <script>
-import {mapMutations} from 'vuex'
+import {mapMutations, mapState} from 'vuex'
 
 function isDefined (variable) {
   return typeof variable !== 'undefined'
@@ -59,10 +62,17 @@ export default {
     let carrierAccess = this.setting.carrier_access
     return {
       settingValueClone: this.setting.overridden ? this.setting.overridden.value : this.setting.default,
-      readonly: carrierAccess === 'R' || carrierAccess === 'N',
+      carrierAccess,
     }
   },
   computed: {
+    ...mapState('shared', ['user']),
+    readonly () {
+      if (!this.user) {
+        return true
+      }
+      return !this.user.is_superuser && (this.carrierAccess === 'R' || this.carrierAccess === 'N')
+    },
     range () {
       let result = {
         min: -Infinity,
@@ -121,6 +131,7 @@ export default {
     },
   },
   methods: {
+
     ...mapMutations('settings', ['updateSingleSetting']),
     updateTextSetting (e) {
       let value = e.target ? e.target.value : e

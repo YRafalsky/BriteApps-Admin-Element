@@ -27,7 +27,7 @@ const module = {
       return state.user.available_companies
     },
     isSuperuser: state => {
-      return state.user.is_superuser
+      return state.user && state.user.is_superuser
     },
     companyNameById: (state) => (companyId) => {
       if (!companyId) {
