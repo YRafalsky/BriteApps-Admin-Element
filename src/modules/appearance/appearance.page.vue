@@ -56,6 +56,12 @@ export default {
           isLoading: false
         },
         {
+          slug: 'favicon',
+          description: 'Favicon on Desktop Portal',
+          sub: 'preferred: 256x256; png',
+          isLoading: false
+        },
+        {
           slug: 'claims_placeholder',
           description: 'Icon on the top of on File Claim page',
           sub: 'preferred: 1000x300; png',
