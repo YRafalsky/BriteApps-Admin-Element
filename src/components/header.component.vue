@@ -79,8 +79,13 @@ export default {
 
   .nav {
     height: 3rem;
-    background-color: #144852;
     vertical-align: center;
+    background-image: -ms-linear-gradient(top left, #667EEA 0%, #764BA2 100%);
+    background-image: -moz-linear-gradient(top left, #667EEA 0%, #764BA2 100%);
+    background-image: -o-linear-gradient(top left, #667EEA 0%, #764BA2 100%);
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #667EEA), color-stop(100, #764BA2));
+    background-image: -webkit-linear-gradient(top left, #667EEA 0%, #764BA2 100%);
+    background-image: linear-gradient(to bottom right, #667EEA 0%, #764BA2 100%);
   }
 
   .nav--fixed {
@@ -104,7 +109,7 @@ export default {
   }
 
   .nav__link {
-    color: $color-extra-light-silver;
+    color: $white;
     display: inline-block;
     text-decoration: none;
     vertical-align: center;
@@ -128,6 +133,6 @@ export default {
 
   .nav__link:hover {
     background-color: rgba(255, 255, 255, 0.2);
-    color: $gray--005;
+    color: $white;
   }
 </style>
