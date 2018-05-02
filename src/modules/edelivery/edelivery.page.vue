@@ -24,9 +24,9 @@
           <el-table class="u-mt3" :data="items" style="width: 100%">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="policy_number" label="Policy Number" width="180"></el-table-column>
-            <el-table-column prop="date1" label="Name" width="180"></el-table-column>
-            <el-table-column prop="type" label="Invoice Type"></el-table-column>
-            <el-table-column prop="date2" label="Address"></el-table-column>
+            <el-table-column prop="title" label="Title" width="180"></el-table-column>
+            <el-table-column prop="label" label="Label"></el-table-column>
+            <el-table-column prop="print_date" label="Print Date"></el-table-column>
           </el-table>
           <el-pagination class="u-mt4" layout="prev, pager, next"
                          :total="total" :page-size="perPage"
@@ -73,9 +73,11 @@ export default {
       this.loadPage(1)
     },
     loadPage (page) {
-      axios.post(`${config.url}/get-edelivery-data/`, {page: page}).then((ret) => {
-        this.items = ret.data.items
-        this.total = ret.data.total
+      console.log('loadPage')
+      axios.post(`${config.url}/company/${this.companyId}/get_edelivery/`, {page: page}).then((ret) => {
+        debugger
+        this.items = ret.data.data.documents
+        this.total = ret.data.data.total
       })
     },
     doSomething () {
