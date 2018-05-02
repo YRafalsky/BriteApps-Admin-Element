@@ -73,7 +73,7 @@ export default {
       total: 0,
       perPage: 50,
       selectedItems: [],
-      ignoreState: true,
+      ignoreState: false,
       onlyElectronicDelivery: true
     }
   },
@@ -147,6 +147,42 @@ export default {
       })
       .finally(() => this.loadInitial())
 
+    },
+    MarkAsSentNow (selectedItems) {
+      let fileIds = _.map(selectedItems, function (item) {
+        return item['file_id']
+      })
+      axios.post(`${config.url}/company/${this.companyId}/mark_as_delivered/`, {file_ids: fileIds})
+      .then(response => {
+        this.$message({
+          type: 'success',
+          message: 'EMails marked as sent.'
+        })
+      })
+      .catch(response => {
+        this.$message({
+          type: 'error',
+          message: 'Failed to mark as sent emails.'
+        });
+      })
+      .finally(() => this.loadInitial())
+
+    },
+    willMarkAsSent () {
+      let count = this.selectedItems.length
+      this.$confirm(`This will mark as sent ${count} email(s). Continue?`, 'Emails are about to be marked as sent', {
+        confirmButtonText: 'Mark as Sent',
+        cancelButtonText: 'Cancel',
+        type: 'info'
+      }).then(() => {
+        this.MarkAsSentNow(this.selectedItems)
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Operation canceled'
+        });
+      });
     },
     willSend () {
       let count = this.selectedItems.length
