@@ -57,6 +57,11 @@ export default {
         name: 'Appearance',
         icon: 'adjust',
       },
+      {
+        link: 'edelivery',
+        name: 'E-Delivery',
+        icon: 'envelope',
+      },
     ]
     return {
       modules,
