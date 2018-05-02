@@ -16,10 +16,6 @@
         </div>
 
         <div class="u-mt3">
-          <!--<el-button-group>-->
-            <!--<el-button @click="checkAll()">Check all</el-button>-->
-            <!--<el-button @click="uncheckAll()">Check none</el-button>-->
-          <!--</el-button-group>-->
           <el-button @click="willSend()" :disabled="!areButtonsEnabled" icon="el-icon-message">SEND</el-button>
           <el-button @click="willMarkAsSent()" :disabled="!areButtonsEnabled" icon="el-icon-check">Mark as sent</el-button>
           <el-table  @selection-change="selectionDidChange" v-loading="loading" ref="edeliveryTable" class="u-mt3" :data="items" style="width: 100%">
