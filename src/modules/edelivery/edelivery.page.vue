@@ -12,12 +12,14 @@
             <el-form-item label="To" class="line-height-3"><el-date-picker  v-model="range.to"></el-date-picker></el-form-item>
 
             <el-form-item><el-button @click="loadPage(1)" icon="el-icon-search">Filter</el-button></el-form-item>
+            <el-checkbox v-model="ignoreState" class="u-ml4 u-mt2">Ignore notification state</el-checkbox>
           </el-form>
         </div>
 
         <div class="u-mt3">
           <el-button @click="willSend()" :disabled="!areButtonsEnabled" icon="el-icon-message">SEND</el-button>
           <el-button @click="willMarkAsSent()" :disabled="!areButtonsEnabled" icon="el-icon-check">Mark as sent</el-button>
+
           <el-table  @selection-change="selectionDidChange" v-loading="loading" ref="edeliveryTable" class="u-mt3" :data="items" style="width: 100%">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="policy_number" label="Policy Number" width="180"></el-table-column>
@@ -128,7 +130,7 @@ export default {
       let fileIds = _.map(selectedItems, function (item) {
         return item['file_id']
       })
-      axios.post(`${config.url}/company/${this.companyId}/make_edelivery/`, {file_ids: fileIds})
+      axios.post(`${config.url}/company/${this.companyId}/make_edelivery/`, {ignore_state: this.ignoreState, file_ids: fileIds})
       .then(response => {
         this.$message({
           type: 'success',
@@ -148,7 +150,7 @@ export default {
       let fileIds = _.map(selectedItems, function (item) {
         return item['file_id']
       })
-      axios.post(`${config.url}/company/${this.companyId}/mark_as_delivered/`, {file_ids: fileIds})
+      axios.post(`${config.url}/company/${this.companyId}/mark_as_delivered/`, {ignore_state: this.ignoreState, file_ids: fileIds})
       .then(response => {
         this.$message({
           type: 'success',
