@@ -12,20 +12,21 @@
             <el-form-item label="To" class="line-height-3"><el-date-picker  v-model="range.to"></el-date-picker></el-form-item>
 
             <el-form-item><el-button @click="loadPage(1)" icon="el-icon-search">Filter</el-button></el-form-item>
-            <el-checkbox v-model="ignoreState" class="u-ml4 u-mt2">Ignore notification state</el-checkbox>
+            <el-checkbox @change="loadPage(1)" v-model="ignoreState" class="u-ml4 u-mt2">Ignore notification state</el-checkbox>
           </el-form>
         </div>
 
         <div class="u-mt3">
-          <el-button @click="willSend()" :disabled="!areButtonsEnabled" icon="el-icon-message">SEND</el-button>
-          <el-button @click="willMarkAsSent()" :disabled="!areButtonsEnabled" icon="el-icon-check">Mark as sent</el-button>
+          <el-button @click="willSendAndMarkAsSent()" :disabled="!areButtonsEnabled" icon="el-icon-check">Send and Mark</el-button>
+          <el-button @click="willSend()" :disabled="!areButtonsEnabled" icon="el-icon-message">Send</el-button>
+          <el-button @click="willMarkAsSent()" :disabled="!areButtonsEnabled">Mark as sent</el-button>
 
-          <el-table  @selection-change="selectionDidChange" v-loading="loading" ref="edeliveryTable" class="u-mt3" :data="items" style="width: 100%">
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="policy_number" label="Policy Number" width="180"></el-table-column>
-            <el-table-column prop="title" label="Title" width="180"></el-table-column>
-            <el-table-column prop="label" label="Label"></el-table-column>
-            <el-table-column prop="print_date" label="Print Date"></el-table-column>
+          <el-table @row-click="rowClick"  @selection-change="selectionDidChange" v-loading="loading" ref="edeliveryTable" class="u-mt3" :data="items" style="width: 100%">
+            <el-table-column type="selection" width="50"></el-table-column>
+            <el-table-column prop="policy_number" label="Policy Number" width="150"></el-table-column>
+            <el-table-column prop="label" label="Label" width="190"></el-table-column>
+            <el-table-column prop="title" label="Title"></el-table-column>
+            <el-table-column prop="print_date" label="Print Date" width="150"></el-table-column>
           </el-table>
           <el-pagination class="u-mt4" layout="prev, pager, next"
                          :total="total" :page-size="perPage"
@@ -85,6 +86,9 @@ export default {
     this.loadInitial()
   },
   methods: {
+    rowClick (selectedObject) {
+      this.$refs.edeliveryTable.toggleRowSelection(selectedObject)
+    },
     loadInitial () {
       this.loadPage(1)
     },
@@ -111,7 +115,6 @@ export default {
         page: page,
 
         ignore_state: this.ignoreState,
-        // todo uncomment
         only_electronic_delivery: this.onlyElectronicDelivery,
       }).then((ret) => {
         // debugger
@@ -146,10 +149,22 @@ export default {
       .finally(() => this.loadInitial())
 
     },
-    MarkAsSentNow (selectedItems) {
-      let fileIds = _.map(selectedItems, function (item) {
-        return item['file_id']
-      })
+    sendAndMarkNow (selectedItems) {
+      let fileIds = this.fileIdsFromItems(selectedItems)
+      axios.post(`${config.url}/company/${this.companyId}/make_edelivery/`, {ignore_state: this.ignoreState, file_ids: fileIds})
+        .then(response => {
+          this.markAsSentNow(selectedItems)
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: 'Failed to sent emails.'
+          });
+        })
+
+    },
+    markAsSentNow (selectedItems) {
+      let fileIds = this.fileIdsFromItems(selectedItems)
       axios.post(`${config.url}/company/${this.companyId}/mark_as_delivered/`, {ignore_state: this.ignoreState, file_ids: fileIds})
       .then(response => {
         this.$message({
@@ -166,14 +181,41 @@ export default {
       .finally(() => this.loadInitial())
 
     },
+    howManyMailsWillBeSend () {
+      const uniqueContacts = [...new Set( this.selectedItems.map(_=> _.contact_id)) ];
+      return uniqueContacts.length
+    },
+    fileIdsFromItems (selectedItems) {
+      let fileIds = _.map(selectedItems, function (item) {
+        return item['file_id']
+      })
+
+      return fileIds
+    },
+    willSendAndMarkAsSent () {
+      let countOfEmails = this.howManyMailsWillBeSend()
+      let countOfDocuments = this.selectedItems.length
+      this.$confirm(`This will send ${countOfEmails} email(s) and mark ${countOfDocuments} documents(s) as sent. Continue?`, 'Emails are about to be sent', {
+        confirmButtonText: 'Send and Mark',
+        cancelButtonText: 'Cancel',
+        type: 'info'
+      }).then(() => {
+        this.sendAndMarkNow(this.selectedItems)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Operation canceled'
+        });
+      });
+    },
     willMarkAsSent () {
       let count = this.selectedItems.length
-      this.$confirm(`This will mark as sent ${count} email(s). Continue?`, 'Emails are about to be marked as sent', {
+      this.$confirm(`This will mark as sent ${count} document(s). Continue?`, 'Documents are about to be marked as sent', {
         confirmButtonText: 'Mark as Sent',
         cancelButtonText: 'Cancel',
         type: 'info'
       }).then(() => {
-        this.MarkAsSentNow(this.selectedItems)
+        this.markAsSentNow(this.selectedItems)
 
       }).catch(() => {
         this.$message({
@@ -183,7 +225,7 @@ export default {
       });
     },
     willSend () {
-      let count = this.selectedItems.length
+      let count = this.howManyMailsWillBeSend()
       this.$confirm(`This will send ${count} email(s). Continue?`, 'Emails are about to be sent', {
         confirmButtonText: 'Send',
         cancelButtonText: 'Cancel',
