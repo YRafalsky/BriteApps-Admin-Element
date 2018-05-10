@@ -20,11 +20,14 @@ import BuildStatusLabel from './modules/builds/status-label.component.vue'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon.vue'
 import moment from 'vue-moment'
+import locale from 'element-ui/lib/locale/lang/en'
+
+
 Vue.component('icon', Icon)
 
 Vue.config.productionTip = true
 
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 
 Vue.use(moment)
 
