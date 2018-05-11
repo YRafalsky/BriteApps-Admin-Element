@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {mapState, mapGetters} from 'vuex'
+import {mapState, mapGetters, mapActions} from 'vuex'
 
 export default {
   name: 'ba-dashboard',
@@ -23,6 +23,12 @@ export default {
     ...mapState('shared', ['user']),
     ...mapGetters('shared', ['companyNameById']),
   },
+  methods: {
+    ...mapActions('settings', ['getInsureds']),
+  },
+  created () {
+    this.getInsureds(this.companyId)
+  }
 }
 </script>
 <style scoped>
