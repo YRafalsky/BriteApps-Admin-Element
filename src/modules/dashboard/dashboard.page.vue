@@ -24,10 +24,23 @@ export default {
     ...mapGetters('shared', ['companyNameById']),
   },
   methods: {
-    ...mapActions('settings', ['getInsureds']),
+    ...mapActions('shared', ['getInsureds']),
   },
   created () {
     this.getInsureds(this.companyId)
+      .then((response) => {
+        console.log('response', response)
+        this.$message({
+          type: 'success',
+          message: 'Data is allowed',
+        })
+      })
+      .catch(e => {
+        this.$message({
+          type: 'error',
+          message: '' + e,
+        })
+      })
   }
 }
 </script>

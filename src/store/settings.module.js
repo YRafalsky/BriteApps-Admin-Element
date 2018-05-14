@@ -3,7 +3,6 @@ import axios from 'axios'
 import config from '@/config'
 import {isFailed} from '@/shared/api.utils'
 import router from '@/router'
-import qs from 'qs'
 
 const settingsModule = {
   namespaced: true,
@@ -24,7 +23,6 @@ const settingsModule = {
     updateSettings(state, payload) {
       state.all = payload
     },
-
     updateSingleSetting(state, payload) {
       if (payload.newValue === payload.oldValue) {
         // do not send extra request
@@ -97,17 +95,6 @@ const settingsModule = {
           )
       })
     },
-    getInsureds(context, payload) {
-      console.log('actions getInsureds company_id: ', payload)
-      return new Promise((resolve) => {
-        axios.post(config.get_insureds_by_company_id, qs.stringify({company_id: payload})).then((response) => {
-          console.log('getInsureds response.dat: ', response.data)
-          resolve()
-        }).catch((e) => {
-          console.log('getInsureds error: ', e)
-        })
-      })
-    }
   },
   getters: {},
 }
