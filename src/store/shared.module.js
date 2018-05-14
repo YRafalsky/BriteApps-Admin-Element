@@ -26,16 +26,16 @@ const module = {
       })
     },
     getInsureds (context, payload) {
-      console.log('actions getInsureds company_id: ', payload)
       return new Promise((resolve, reject) => {
         axios.post(config.get_insureds_by_company_id, qs.stringify({company_id: payload})).then((response) => {
-          console.log('getInsureds response: ', response)
-          context.commit('getUsers', response.data)
-          resolve(response)
+          context.commit('getUsers', response.data.data)
+          resolve(response.data.data)
         }, (e) => {
           reject(e)
+          return false
         }).catch((e) => {
           reject(e)
+          return false
         })
       })
     }
