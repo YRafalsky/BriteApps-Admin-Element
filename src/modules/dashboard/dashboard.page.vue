@@ -18,6 +18,10 @@
               <div class="el-card__tel" v-if="user.phones.length">
                 <i class="el-icon-phone-outline"></i>{{user.phones[0].phone}}
               </div>
+              <div class="el-card__address" v-if="user.addresses.length">
+                <p><i class="el-icon-location-outline"></i>{{user.addresses[0].address_country}}, {{user.addresses[0].address_city}}</p>
+                <p><i class="el-icon-location-outline"></i>{{user.addresses[0].address_zip}}, {{user.addresses[0].address_line1}}</p>
+              </div>
             </div>
             <div class="users-list__view_icon">
               <div v-if="user.photo_id" class="el-card__photo"><img :src="urlForAttachment(user.photo_id)"></div>
@@ -84,8 +88,12 @@ export default {
       display: flex;
       justify-content: space-between;
       &_icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         padding-left: 10px;
         border-left: 1px solid $gray--020;
+
       }
     }
 
@@ -109,8 +117,21 @@ export default {
         color: $gray--080;
         font-size: 14px;
         font-weight: 300;
+        line-height: 20px;
         & > i {
           padding-right: 5px;
+        }
+      }
+      &__address {
+        color: $gray--080;
+        font-size: 14px;
+        font-weight: 300;
+        & > p {
+          margin: 0;
+          line-height: 20px;
+          & > i {
+            padding-right: 5px;
+          }
         }
       }
 
