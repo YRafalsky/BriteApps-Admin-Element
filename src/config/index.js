@@ -15,7 +15,6 @@ var config = {
 
 config.login_as_company_staff = config.url + '/login_as_company_staff/'
 config.get_carrier_user = config.url + '/get_carrier_user/'
-config.get_insureds_by_company_id = config.url + '/get_insureds_by_company_id/'
 
 config.list_builds_per_company = config.url + '/builds/'
 config.builds_details = config.url + '/build/'

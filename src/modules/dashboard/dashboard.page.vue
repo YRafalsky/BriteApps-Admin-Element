@@ -56,10 +56,6 @@ export default {
     this.getInsureds(this.companyId)
       .then(() => {
         this.isUsersAllowed = true
-        this.$message({
-          type: 'success',
-          message: 'Data is allowed',
-        })
       })
       .catch(e => {
         this.isUsersAllowed = false

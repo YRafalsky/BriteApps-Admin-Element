@@ -1,6 +1,5 @@
 import axios from 'axios'
 import config from '@/config'
-import qs from 'qs'
 
 const module = {
   namespaced: true,
@@ -27,7 +26,7 @@ const module = {
     },
     getInsureds (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.post(config.get_insureds_by_company_id, qs.stringify({company_id: payload})).then((response) => {
+        axios.post(`${config.url}/company/${payload}/get_insureds/`).then((response) => {
           context.commit('getUsers', response.data.data)
           resolve(response.data.data)
         }, (e) => {
