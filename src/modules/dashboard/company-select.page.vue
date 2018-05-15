@@ -69,6 +69,10 @@
         grid-template-columns: 1fr 1fr 1fr;
         align-items: center;
 
+        @media only screen and (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+
     }
     .my-grid--no-results {
         display: block;
@@ -104,6 +108,11 @@
         /*text-align: center;*/
 
         /*display: block;*/
+        @media only screen and (max-width: 768px) {
+            display: block;
+            width: 100%;
+        }
+
     }
     .company-select__no-results {
         visibility: hidden;

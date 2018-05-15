@@ -23,7 +23,6 @@ const settingsModule = {
     updateSettings(state, payload) {
       state.all = payload
     },
-
     updateSingleSetting(state, payload) {
       if (payload.newValue === payload.oldValue) {
         // do not send extra request
@@ -96,7 +95,6 @@ const settingsModule = {
           )
       })
     },
-
   },
   getters: {},
 }
