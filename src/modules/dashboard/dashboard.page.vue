@@ -20,8 +20,8 @@
               </div>
             </div>
             <div class="users-list__view_icon">
-              <div v-if="user.photo_id" class="el-card__photo">{{user.photo_id}}</div>
-              <div v-if="!user.photo_id" class="el-card__photo"><img :src="userPhoto" alt="user photo"></div>
+              <div v-if="user.photo_id" class="el-card__photo"><img :src="urlForAttachment(user.photo_id)"></div>
+              <div v-if="!user.photo_id" class="el-card__photo"><img :src="iconUser" alt="user photo"></div>
             </div>
           </div>
         </div>
@@ -32,7 +32,8 @@
 
 <script>
 import {mapState, mapGetters, mapActions} from 'vuex'
-import userPhoto from '../../assets/non-user.svg'
+import iconUser from '../../assets/non-user.svg'
+import config from '@/config'
 
 export default {
   name: 'ba-dashboard',
@@ -41,7 +42,7 @@ export default {
     let companyId = this.$route.params.companyId
     return {
       companyId,
-      userPhoto,
+      iconUser,
       isUsersAllowed: false
     }
   },
@@ -51,6 +52,9 @@ export default {
   },
   methods: {
     ...mapActions('shared', ['getInsureds']),
+    urlForAttachment (fileId) {
+      return config.url + '/get_attachment_all/?file_id=' + fileId + '&company_id=' + this.companyId
+    }
   },
   created () {
     this.getInsureds(this.companyId)
