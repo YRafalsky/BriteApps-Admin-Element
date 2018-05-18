@@ -1,7 +1,11 @@
+import axios from 'axios'
+import config from '@/config'
+
 const module = {
   namespaced: true,
   state: {
     user: null,
+    users: null
   },
   mutations: {
     mutationName (state, payload) {
@@ -9,7 +13,10 @@ const module = {
     updateUser (state, payload) {
       console.log('updateuser')
       state.user = payload
-    }
+    },
+    getUsers (state, payload) {
+      state.users = payload
+    },
   },
   actions: {
     actionName (context, payload) {
@@ -17,6 +24,20 @@ const module = {
         resolve()
       })
     },
+    getInsureds (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`${config.url}/company/${payload}/get_insureds/`).then((response) => {
+          context.commit('getUsers', response.data.data)
+          resolve(response.data.data)
+        }, (e) => {
+          reject(e)
+          return false
+        }).catch((e) => {
+          reject(e)
+          return false
+        })
+      })
+    }
   },
   getters: {
     availableCompanies: state => {
