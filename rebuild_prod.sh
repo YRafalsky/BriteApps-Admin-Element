@@ -6,7 +6,7 @@ docker build -t ba_carrier_portal:latest .
 
 
 docker run -v ~/public_html/prod:/var/dist/dist \
-        --env API_ROOT="'http://admin.briteapps.com'"  \
+        --env API_ROOT="'https://admin.briteapps.com'"  \
         ba_carrier_portal:latest
 
 docker rm --force ba_carrier_portal__nginx
