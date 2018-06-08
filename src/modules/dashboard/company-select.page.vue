@@ -15,6 +15,8 @@
                         <el-button class="company-select__button">
                             <div class="company-select__name">
                                 {{company.name}}
+                              <br/>
+                              {{healthcheckByCompany(company.id)}}
                             </div>
                             <div>
                                 <img  class="company-select__button_pict" :src="apiRoot + '/get_image/logo/'+ company.id" />
@@ -36,6 +38,7 @@
     name: 'ba-company-select',
     computed: {
       ...mapGetters('shared', ['availableCompanies']),
+      ...mapGetters('shared', ['healthcheckByCompany']),
       apiRoot () {
         return config.url
       },
