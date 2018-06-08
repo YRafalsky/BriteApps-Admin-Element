@@ -45,6 +45,7 @@
     },
     methods: {
       ...mapActions('login', ['init']),
+      ...mapActions('shared', ['loadHealthcheck']),
       clearSearch () {
         console.log('aa', this.searchText)
         this.searchText = ''
@@ -57,6 +58,7 @@
     },
     created () {
       this.init()
+      this.loadHealthcheck()
     },
   }
 </script>
