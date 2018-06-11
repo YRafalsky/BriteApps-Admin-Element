@@ -5,7 +5,8 @@ const module = {
   namespaced: true,
   state: {
     user: null,
-    users: null
+    users: null,
+    healthcheck: null,
   },
   mutations: {
     mutationName (state, payload) {
@@ -13,6 +14,10 @@ const module = {
     updateUser (state, payload) {
       console.log('updateuser')
       state.user = payload
+    },
+    healthcheckDidLoad (state, payload) {
+      console.log('healthcheckDidLoad')
+      state.healthcheck = payload
     },
     getUsers (state, payload) {
       state.users = payload
@@ -37,6 +42,10 @@ const module = {
           return false
         })
       })
+    },
+    async loadHealthcheck (context, payload) {
+      let response = await axios.post(`${config.url}/up/`)
+      context.commit('healthcheckDidLoad', response.data.britecores)
     }
   },
   getters: {
@@ -49,6 +58,13 @@ const module = {
     },
     isSuperuser: state => {
       return state.user && state.user.is_superuser
+    },
+    healthcheckByCompany: (state) => (companyId) => {
+      if (!companyId || !state.healthcheck) {
+        return null
+      }
+  
+      return state.healthcheck.find(_ => _.id === companyId)
     },
     companyNameById: (state) => (companyId) => {
       if (!companyId) {
