@@ -2,7 +2,7 @@
   <div class="healthcheck">
     <!--:onclick="preventDefault($event)"-->
     <a :href="url" target="_blank"  :title="cssClass + ' - ' + url" class="status" :class="cssClass">
-      <icon v-if="status === false" class="healthcheck__icon" name="warning" scale="0.8"></icon>
+      <icon v-if="status === false" class="healthcheck__icon" name="warning" scale="0.7"></icon>
     </a>
   </div>
 </template>
@@ -21,7 +21,7 @@
       },
 
       url () {
-        if (!this.healthcheck || !this.healthcheck.britecore_status) {
+        if (!this.healthcheck) {
           return null
         }
 
