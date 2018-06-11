@@ -64,7 +64,7 @@ const module = {
         return null
       }
   
-      return state.healthcheck.find(_ => _.id === companyId).britecore_status
+      return state.healthcheck.find(_ => _.id === companyId)
     },
     companyNameById: (state) => (companyId) => {
       if (!companyId) {

@@ -12,11 +12,20 @@
                     <el-button @click="clearSearch()">Clear</el-button>
                 </div>
                 <router-link class="my-grid__element company-link" v-for="company in availableCompanies" v-if="company.name.toLowerCase().indexOf(searchText) >= 0" :key="company.id" :to="'/company/'+ company.id +'/'">
+
                         <el-button class="company-select__button">
-                            <div class="company-select__name">
-                                {{company.name}}
-                              <br/>
-                              {{healthcheckByCompany(company.id)}}
+                            <div class="company-select__row">
+                                <div class="row__healtcheck">
+                                    <ba-healthcheck-status :healthcheck="healthcheckByCompany(company.id)">
+
+                                    </ba-healthcheck-status>
+
+
+                                </div>
+                                <div class="company-select__name">
+                                    {{company.name}}
+                                </div>
+
                             </div>
                             <div>
                                 <img  class="company-select__button_pict" :src="apiRoot + '/get_image/logo/'+ company.id" />
@@ -33,9 +42,13 @@
 <script>
   import {mapGetters, mapActions} from 'vuex'
   import config from '@/config'
+  import HealthcheckStatusComponent from './healthcheck-status.component'
 
   export default {
     name: 'ba-company-select',
+    components: {
+      'ba-healthcheck-status': HealthcheckStatusComponent,
+    },
     computed: {
       ...mapGetters('shared', ['availableCompanies']),
       ...mapGetters('shared', ['healthcheckByCompany']),
@@ -102,6 +115,19 @@
         }
 
     }
+
+    .company-select__row {
+        position: relative;
+
+    }
+    .row__healtcheck {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+
+
     .company-select__name {
         border-bottom: solid 1px rgba(0, 0, 0, 0.19);
         margin-bottom: 1em;
