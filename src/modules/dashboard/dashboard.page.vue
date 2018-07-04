@@ -5,8 +5,8 @@
     <div class="u-pt4"></div>
     <h2 class="u-text--center u-header-padding"> {{companyNameById(companyId)}}</h2>
     <div class="u-text--sm u-text--center">Welcome {{user.username}}</div>
-
-    <el-row v-if="isUsersAllowed" class="container">
+    <el-button class="u-ml4" @click="downloadInsuredListXls">Download insureds list</el-button>
+    <el-row v-if="isUsersListDownloaded" class="container">
       <el-col class="users-list" :span="24">
         <div class="el-card" v-for="(user, i) in users" :key="i">
           <div class="users-list__view">
@@ -47,7 +47,7 @@ export default {
     return {
       companyId,
       iconUser,
-      isUsersAllowed: false
+      isUsersListDownloaded: false
     }
   },
   computed: {
@@ -58,15 +58,19 @@ export default {
     ...mapActions('shared', ['getInsureds']),
     urlForAttachment (fileId) {
       return config.url + '/get_attachment_all/?file_id=' + fileId + '&company_id=' + this.companyId
+    },
+    downloadInsuredListXls () {
+      let url = config.url + '/company/' + this.companyId + '/get_insureds_xls/?token=' + localStorage.carrierToken
+      window.open(url, '_blank')
     }
   },
   created () {
     this.getInsureds(this.companyId)
       .then(() => {
-        this.isUsersAllowed = true
+        this.isUsersListDownloaded = true
       })
       .catch(e => {
-        this.isUsersAllowed = false
+        this.isUsersListDownloaded = false
         this.$message({
           type: 'error',
           message: '' + e,
