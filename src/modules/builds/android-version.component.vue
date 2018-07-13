@@ -43,7 +43,7 @@ export default {
     loadAndroidPromotesState () {
       this.loading = true
       clearTimeout(this.loadAndroidTimerRef)
-      axios.get(`${config.url}/company/${this.companyId}/promoted/android`)
+      axios.get(`${config.url}/company/${this.companyId}/promoted/android/`)
         .then(response => {
           this.builds = response.data
           this.loadAndroidTimerRef = setTimeout(this.loadAndroidPromotesState, 60000)
