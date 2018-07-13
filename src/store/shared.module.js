@@ -31,7 +31,7 @@ const module = {
     },
     getInsureds (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.post(`${config.url}/company/${payload}/get_insureds/`).then((response) => {
+        axios.get(`${config.url}/company/${payload}/get_insureds/`).then((response) => {
           context.commit('getUsers', response.data.data)
           resolve(response.data.data)
         }, (e) => {
