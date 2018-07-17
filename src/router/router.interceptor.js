@@ -9,9 +9,15 @@ function beforeEach (to, from, next) {
     next()
   }
 
+  let isHeadingToMobileBuildPage = to.name ==='build-details-mobile'
+
   if (store.state.login.token === null) {
-    console.log('Not allowed to go to the route for unathorized person')
-    next('/login')
+    if (isHeadingToMobileBuildPage) {
+      next()
+    } else {
+      console.log('Not allowed to go to the route for unauthorized person')
+      next('/login')
+    }
   } else {
     if (store.state.shared.user === null) {
       console.log('user is null')
@@ -20,7 +26,13 @@ function beforeEach (to, from, next) {
         console.log('Init complete')
         next()
       })
-      .catch(() => next('/login'))
+      .catch(() => {
+        if (isHeadingToMobileBuildPage) {
+          next()
+        } else {
+          next('/login')
+        }
+      })
     } else {
       next()
     }
