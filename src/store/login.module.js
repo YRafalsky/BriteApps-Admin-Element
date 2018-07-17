@@ -1,4 +1,3 @@
-/* eslint-disable */
 import axios from 'axios'
 import config from '@/config'
 import {isFailed} from '@/shared/api.utils'
@@ -9,7 +8,6 @@ const loginModule = {
   namespaced: true,
   state: {
     token: localStorage.getItem(tokenKey),
-    mobileBuildDemoMode: false
   },
   mutations: {
     updateToken (state, payload) {
@@ -21,14 +19,11 @@ const loginModule = {
         state.token = null
       }
     },
-    setMobileBuildDemoMode (state, payload) {
-      state.mobileBuildDemoMode = payload
-    },
   },
   actions: {
     logout: function (context, payload) {
       console.log('logout...')
-      context.commit('shared/updateUser', null, {root:true})
+      context.commit('shared/updateUser', null, {root: true})
       context.commit('updateToken', null)
       router.push({name: 'login'})
     },
@@ -36,10 +31,6 @@ const loginModule = {
       console.log('auth...')
       return new Promise((resolve, reject) => {
         let data
-        let url
-
-
-        url = config.url
         data = {
           username: payload.username,
           password: payload.password,
@@ -55,7 +46,7 @@ const loginModule = {
           // success
           context.commit('updateToken', response.data.token)
 
-          context.commit('shared/updateUser', response.data.data, {root:true})
+          context.commit('shared/updateUser', response.data.data, {root: true})
 
 
           resolve(response)
@@ -67,30 +58,26 @@ const loginModule = {
     },
     init: function (context, payload) {
       let token = context.state.token
-      return new Promise((resolve) => { //after login init done resolve promise in ANY case
-          axios.post(config.get_carrier_user, { //recheck token
-            token,
-          }).then(
-            (response) => {
-              if (isFailed(response)) {
-                context.commit('updateToken', null)
-              }
-              context.commit('shared/updateUser', response.data.data, {root:true})
-              resolve()
-            },
-            (response) => {
+      return new Promise((resolve) => { // after login init done resolve promise in ANY case
+        axios.post(config.get_carrier_user, { // recheck token
+          token,
+        }).then(
+          (response) => {
+            if (isFailed(response)) {
               context.commit('updateToken', null)
-              resolve()
-            },
-          )
+            }
+            context.commit('shared/updateUser', response.data.data, {root: true})
+            resolve()
+          },
+          (response) => {
+            context.commit('updateToken', null)
+            resolve()
+          },
+        )
       })
     },
   },
-  getters: {
-    mobileBuildDemoMode: state => {
-      return state.mobileBuildDemoMode
-    },
-  },
+  getters: {},
 }
 
 export default loginModule
