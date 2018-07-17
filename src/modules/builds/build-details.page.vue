@@ -7,6 +7,7 @@
       <div v-if="!isUserAuthorized">
         <el-button type="success" @click="$router.push({ name: 'login'})" >Login</el-button>
       </div>
+      <h2 v-if="!isUserAuthorized" class="u-text--center">{{ build.company }}</h2>
       <h2 class="u-text--center">Build {{ humanBuildId }} Details</h2>
       <ba-android-version-list :companyId="companyId" class="u-text--center u-mb2" ref="androidVersionListElement"></ba-android-version-list>
       <div class="controls-container u-text--center"  v-if="isUserAuthorized">
