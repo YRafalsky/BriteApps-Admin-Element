@@ -1,6 +1,7 @@
 /* eslint-disable */
 import axios from 'axios'
 import router from '@/router'
+import store from '@/store'
 
 let modalCreated = false
 
@@ -32,7 +33,10 @@ axios.interceptors.response.use(
     // here is only 401 case
     localStorage.setItem('carrierToken', null)
     localStorage.setItem('companyId', null)
-    router.push({path: '/login'})
+
+    if (!store.getters['login/mobileBuildDemoMode']) {
+      router.push({path: '/login'})
+    }
     return Promise.reject(error)
   }
 )

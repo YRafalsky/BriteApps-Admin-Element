@@ -11,7 +11,7 @@
     <div class="u-float-right">
 
         <router-link :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./" class="nav__link nav__link--last u-mr4 u-text--center">{{companyNameById(companyId)}}</router-link>
-        <router-link to="/login" @click="logout(); $event.preventDefault()" class="nav__link nav__link--last u-mr4 u-text--center"><icon :scale="1" name="sign-out"></icon></router-link>
+        <a @click="logout(); $event.preventDefault()" class="nav__link nav__link--last u-mr4 u-text--center"><icon :scale="1" name="sign-out"></icon></a>
     </div>
   </div>
 </template>
@@ -79,7 +79,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('login', ['logout'])
+    ...mapActions('login', ['logout']),
   },
 
 }

@@ -8,7 +8,8 @@ const tokenKey = 'carrierToken'
 const loginModule = {
   namespaced: true,
   state: {
-    token: localStorage.getItem(tokenKey)
+    token: localStorage.getItem(tokenKey),
+    mobileBuildDemoMode: false
   },
   mutations: {
     updateToken (state, payload) {
@@ -20,13 +21,15 @@ const loginModule = {
         state.token = null
       }
     },
+    setMobileBuildDemoMode (state, payload) {
+      state.mobileBuildDemoMode = payload
+    },
   },
   actions: {
     logout: function (context, payload) {
       console.log('logout...')
-      context.commit('shared/updateUser', null)
+      context.commit('shared/updateUser', null, {root:true})
       context.commit('updateToken', null)
-
       router.push({name: 'login'})
     },
     auth: function (context, payload) {
@@ -83,7 +86,11 @@ const loginModule = {
       })
     },
   },
-  getters: {},
+  getters: {
+    mobileBuildDemoMode: state => {
+      return state.mobileBuildDemoMode
+    },
+  },
 }
 
 export default loginModule

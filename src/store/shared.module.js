@@ -9,8 +9,6 @@ const module = {
     healthcheck: null,
   },
   mutations: {
-    mutationName (state, payload) {
-    },
     updateUser (state, payload) {
       console.log('updateuser')
       state.user = payload
@@ -24,11 +22,6 @@ const module = {
     },
   },
   actions: {
-    actionName (context, payload) {
-      return new Promise((resolve, reject) => {
-        resolve()
-      })
-    },
     getInsureds (context, payload) {
       return new Promise((resolve, reject) => {
         axios.get(`${config.url}/company/${payload}/get_insureds/`).then((response) => {
