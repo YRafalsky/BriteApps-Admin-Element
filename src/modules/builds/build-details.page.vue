@@ -1,12 +1,16 @@
 <template>
   <div class="build-details">
-    <ba-header activeModule="builds"></ba-header>
+    <ba-header activeModule="builds" v-if="isUserAuthorized"></ba-header>
     <div v-loading="loading" class="build-details__root ">
       <div class="u-pt4"></div>
       <div class="u-pt4"></div>
+      <div v-if="!isUserAuthorized">
+        <el-button type="success" @click="$router.push({ name: 'login'})" >Login</el-button>
+      </div>
+      <h2 v-if="!isUserAuthorized" class="u-text--center">{{ build.company }}</h2>
       <h2 class="u-text--center">Build {{ humanBuildId }} Details</h2>
       <ba-android-version-list :companyId="companyId" class="u-text--center u-mb2" ref="androidVersionListElement"></ba-android-version-list>
-      <div class="controls-container u-text--center">
+      <div class="controls-container u-text--center"  v-if="isUserAuthorized">
         <el-button  icon="el-icon-refresh" @click="invalidateBuildStatus()">Invalidate Status</el-button>
       </div>
       <div class="u-text--center u-mt3">
@@ -15,7 +19,7 @@
 
 
       <div v-if="loading">Loading...</div>
-      <div v-if="!loading && build && build.status=='SUCCEEDED'">
+      <div v-if="!loading && build && build.status=='SUCCEEDED' && isUserAuthorized" >
         <div class="apk-download u-text--center u-mt4">
           <a :href="ApkLink">Download Android APK</a>
         </div>
@@ -135,6 +139,7 @@ import config from '@/config'
 import BuildPreview from './build-preview.component.vue'
 import ElTag from 'element-ui/packages/tag/src/tag'
 import AndroidVersionList from './android-version.component'
+import {mapState} from 'vuex'
 
 let promoteAppleBuildBaseCaption = 'Send to Apple for Approval'
 
@@ -174,6 +179,11 @@ export default {
     }
   },
   computed: {
+    ...mapState('shared', ['user']),
+    ...mapState('login', ['token']),
+    isUserAuthorized () {
+      return (this.user !== null && this.token !== null)
+    },
     buildPreviewLink () {
       return this.build.aws_build_preview
     },
@@ -322,7 +332,9 @@ export default {
     this.loading = true
     this.initBuildStatus = null
     this.loadBuild()
-    this.loadApplePromoteDetails()
+    if (this.isUserAuthorized) {
+      this.loadApplePromoteDetails()
+    }
   },
   beforeDestroy () {
     clearTimeout(this.loadBuildTimerRef)
