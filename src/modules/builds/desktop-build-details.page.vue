@@ -156,7 +156,7 @@
           this.loading = false
         })
       },
-      publishBuildKubernetes() {
+      publishBuildKubernetes () {
         axios.post(config.desktop_builds_details + this.buildId + '/publish-on-kubernetes/', {})
              .then(_ => {
                console.log('_', _.data)
