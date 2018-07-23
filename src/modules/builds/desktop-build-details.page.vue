@@ -69,6 +69,13 @@
                 </span>
           </el-dialog>
         </div>
+          <div class="col-12 u-text--center u-mt5" v-if="!loading && build && build.status=='SUCCEEDED'">
+            <el-button @click="publishBuildKubernetes"  v-if="!loading && build && build.status=='SUCCEEDED'" type="success"
+                       element-loading-background="rgba(0, 0, 0, 0.1)">
+              <icon name="cloud-upload"></icon>
+              <span class="u-ml1">Publish On Kubernetes! (beta)</span>
+            </el-button>
+        </div>
         <div class="col-12">
           <h3 class="u-text--center u-mt4">Build Preview</h3>
           <a :href="buildPreviewLink" target="_blank" v-if="!loading && build && build.status=='SUCCEEDED'"
@@ -149,11 +156,34 @@
           this.loading = false
         })
       },
+      publishBuildKubernetes () {
+        axios.post(config.desktop_builds_details + this.buildId + '/publish-on-kubernetes/', {})
+             .then(_ => {
+               console.log('_', _.data)
+               this.$notify({
+                 message: 'Site for ' + this.build.company + ' will be deployed on k8 shortly.',
+                 type: 'success'
+               })
+             })
+             .catch(_ => {
+               this.$notify({
+                 title: 'Error while publishing site live',
+                 message: _.data,
+                 type: 'error',
+                 duration: 0
+               })
+             })
+             .finally(() => {
+               this.loading = false
+             })
+      },
       loadBuild () {
         if (this.build.status && ['queued', 'IN_PROGRESS'].indexOf(this.build.status) === -1) {
           this.loading = false
           return
         }
+        this.loading = true
+
         axios.get(config.desktop_builds_details + this.buildId + '/')
         .then(response => {
           if (!this.loading) {
@@ -162,7 +192,7 @@
           this.loading = false
           this.build = response.data
           if (['queued', 'IN_PROGRESS'].indexOf(this.build.status) !== -1) {
-            this.loading = true
+            this.loading = false
             this.initBuildStatus = this.build.status
             this.loadBuildTimerRef = setTimeout(this.loadBuild, 15000)
           } else {
