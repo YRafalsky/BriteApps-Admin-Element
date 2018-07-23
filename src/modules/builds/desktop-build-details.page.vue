@@ -182,6 +182,8 @@
           this.loading = false
           return
         }
+        this.loading = true
+
         axios.get(config.desktop_builds_details + this.buildId + '/')
         .then(response => {
           if (!this.loading) {
@@ -190,7 +192,7 @@
           this.loading = false
           this.build = response.data
           if (['queued', 'IN_PROGRESS'].indexOf(this.build.status) !== -1) {
-            this.loading = true
+            this.loading = false
             this.initBuildStatus = this.build.status
             this.loadBuildTimerRef = setTimeout(this.loadBuild, 15000)
           } else {

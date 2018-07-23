@@ -62,6 +62,12 @@ export default {
           isLoading: false
         },
         {
+          slug: 'desktop_logo',
+          description: 'Logo on Desktop Portal',
+          sub: 'Bigger image than mobile; png',
+          isLoading: false
+        },
+        {
           slug: 'claims_placeholder',
           description: 'Icon on the top of on File Claim page',
           sub: 'preferred: 1000x300; png',
