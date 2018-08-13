@@ -84,10 +84,17 @@ export default {
   @import '../../styles/variables';
 
   .users-list {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 30px 30px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 15px;
+    padding: 30px;
+
+    @media only screen and (max-width: 992px) {
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
+
     &__view {
       display: flex;
       justify-content: space-between;
@@ -101,12 +108,7 @@ export default {
       }
     }
 
-    @media only screen and (max-width: 768px) {
-      padding: 0 15px 0;
-    }
     .el-card {
-      min-width: 300px;
-      margin-bottom: 30px;
       &__photo {
         & > img {
           height: 40px;
