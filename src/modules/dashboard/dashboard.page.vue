@@ -70,7 +70,6 @@ export default {
     getSuperuserCredentialsClick (userId) {
       this.getSuperuserCredentials(userId)
         .then(response => {
-          console.log(response)
           if (response.data.success) {
             this.$alert(
               '<p><i>This is a one-time password to perform superuser access ' +
