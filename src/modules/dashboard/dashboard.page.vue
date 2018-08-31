@@ -8,24 +8,27 @@
     <el-button class="u-ml4" @click="downloadInsuredListXls">Download insureds list</el-button>
     <el-row v-if="isUsersListDownloaded" class="container">
       <el-col class="users-list" :span="24">
-        <div class="el-card" v-for="(user, i) in users" :key="i">
+        <div class="el-card" v-for="(userItem, i) in users" :key="i">
           <div class="users-list__view">
             <div>
-              <div class="el-card__name">{{user.name}}</div>
-              <div class="el-card__tel" v-if="!user.phones.length">
+              <div class="el-card__name">{{userItem.name}}</div>
+              <div class="el-card__tel" v-if="!userItem.phones.length">
                 <i class="el-icon-phone-outline"></i>No Data
               </div>
-              <div class="el-card__tel" v-if="user.phones.length">
-                <i class="el-icon-phone-outline"></i>{{user.phones[0].phone}}
+              <div class="el-card__tel" v-if="userItem.phones.length">
+                <i class="el-icon-phone-outline"></i>{{userItem.phones[0].phone}}
               </div>
-              <div class="el-card__address" v-if="user.addresses.length">
-                <p><i class="el-icon-location-outline"></i>{{user.addresses[0].address_country}}, {{user.addresses[0].address_city}}</p>
-                <p><i class="el-icon-location-outline"></i>{{user.addresses[0].address_zip}}, {{user.addresses[0].address_line1}}</p>
+              <div class="el-card__address" v-if="userItem.addresses.length">
+                <p><i class="el-icon-location-outline"></i>{{userItem.addresses[0].address_country}}, {{userItem.addresses[0].address_city}}</p>
+                <p><i class="el-icon-location-outline"></i>{{userItem.addresses[0].address_zip}}, {{userItem.addresses[0].address_line1}}</p>
               </div>
+              <el-button size="mini" @click="getSuperuserCredentialsClick(userItem.id)" v-if="user.is_superuser">
+                <p>Login as Superuser</p>
+              </el-button>
             </div>
             <div class="users-list__view_icon">
-              <div v-if="user.photo_id" class="el-card__photo"><img :src="urlForAttachment(user.photo_id)"></div>
-              <div v-if="!user.photo_id" class="el-card__photo"><img :src="iconUser" alt="user photo"></div>
+              <div v-if="userItem.photo_id" class="el-card__photo"><img :src="urlForAttachment(userItem.photo_id)"></div>
+              <div v-if="!userItem.photo_id" class="el-card__photo"><img :src="iconUser" alt="user photo"></div>
             </div>
           </div>
         </div>
@@ -38,10 +41,11 @@
 import {mapState, mapGetters, mapActions} from 'vuex'
 import iconUser from '../../assets/non-user.svg'
 import config from '@/config'
+import ElButton from '../../../node_modules/element-ui/packages/button/src/button.vue'
 
 export default {
   name: 'ba-dashboard',
-  components: {},
+  components: {ElButton},
   data () {
     let companyId = this.$route.params.companyId
     return {
@@ -55,13 +59,30 @@ export default {
     ...mapGetters('shared', ['companyNameById']),
   },
   methods: {
-    ...mapActions('shared', ['getInsureds']),
+    ...mapActions('shared', ['getInsureds', 'getSuperuserCredentials']),
     urlForAttachment (fileId) {
       return config.url + '/get_attachment_all/?file_id=' + fileId + '&company_id=' + this.companyId
     },
     downloadInsuredListXls () {
       let url = config.url + '/company/' + this.companyId + '/get_insureds_xls/?token=' + localStorage.carrierToken
       window.open(url, '_blank')
+    },
+    getSuperuserCredentialsClick (userId) {
+      this.getSuperuserCredentials(userId)
+        .then(response => {
+          console.log(response)
+          if (response.data.success) {
+            this.$alert(
+              '<p><i>This is a one-time password to perform superuser access ' +
+              'to given user. Password will expire immediately after logging in or ' +
+              'automatically within 30 minutes</i><br>' +
+              '<p>Username: ' + response.data.data.username +
+              '<p>Password: ' + response.data.data.password,
+              'Superuser Credentials',
+              {dangerouslyUseHTMLString: true}
+            )
+          }
+        })
     }
   },
   created () {
