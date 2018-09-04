@@ -41,7 +41,7 @@
 import {mapState, mapGetters, mapActions} from 'vuex'
 import iconUser from '../../assets/non-user.svg'
 import config from '@/config'
-import ElButton from '../../../node_modules/element-ui/packages/button/src/button.vue'
+import ElButton from 'element-ui/packages/button/src/button.vue'
 
 export default {
   name: 'ba-dashboard',
