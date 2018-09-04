@@ -41,11 +41,9 @@
 import {mapState, mapGetters, mapActions} from 'vuex'
 import iconUser from '../../assets/non-user.svg'
 import config from '@/config'
-import ElButton from 'element-ui/packages/button/src/button.vue'
 
 export default {
   name: 'ba-dashboard',
-  components: {ElButton},
   data () {
     let companyId = this.$route.params.companyId
     return {
