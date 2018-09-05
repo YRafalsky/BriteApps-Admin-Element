@@ -92,6 +92,7 @@ export default {
   @import "../styles/variables";
 
   .nav {
+    transition: all 0.3s ease-in-out;
     height: 3rem;
     vertical-align: center;
     background-image: -ms-linear-gradient(top left, #667EEA 0%, #764BA2 100%);
@@ -159,7 +160,7 @@ export default {
 
     .nav--fixed {
       position: static;
-      height: auto;
+      height: 31em;
       text-align: center;
     }
 
