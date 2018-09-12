@@ -22,6 +22,15 @@ const module = {
     },
   },
   actions: {
+    getSuperuserCredentials (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(config.url + '/get_superuser_credentials/', {user_id: payload}).then((response) => {
+          resolve(response)
+        }, (e) => {
+          reject(e)
+        })
+      })
+    },
     getInsureds (context, payload) {
       return new Promise((resolve, reject) => {
         axios.get(`${config.url}/company/${payload}/get_insureds/`).then((response) => {
