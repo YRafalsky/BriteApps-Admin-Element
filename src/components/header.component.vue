@@ -1,5 +1,8 @@
 <template>
-  <div class="nav nav--fixed">
+  <div class="nav nav--fixed":class="isMenuCollapsed ? 'nav--collapsed' : 'nav--expanded'">
+    <el-button round class="nav__menu-toggle"  @click="isMenuCollapsed = !isMenuCollapsed">       <icon name="bars"></icon>
+    </el-button>
+
     <router-link to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
     </router-link>
@@ -71,6 +74,7 @@ export default {
     return {
       modules,
       companyId,
+      isMenuCollapsed: true,
     }
   },
   computed: {
@@ -88,6 +92,7 @@ export default {
   @import "../styles/variables";
 
   .nav {
+    transition: all 0.3s ease-in-out;
     height: 3rem;
     vertical-align: center;
     background-image: -ms-linear-gradient(top left, #667EEA 0%, #764BA2 100%);
@@ -145,4 +150,45 @@ export default {
     background-color: rgba(255, 255, 255, 0.2);
     color: $white;
   }
+  .nav__menu-toggle {
+    display: none;
+  }
+  @media (max-width: 1524px) {
+    .nav__menu-toggle {
+      display: inline-block;
+    }
+
+    .nav--fixed {
+      position: static;
+      height: 31em;
+      text-align: center;
+    }
+
+    .nav__link {
+      margin: 0 0;
+      padding: 0.8em 0;
+      display: block;
+    }
+
+    .nav__menu-toggle {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+    }
+
+    .nav--collapsed {
+      height: 3em;
+      overflow: hidden;
+    }
+    .u-float-right {
+      float:  none !important;
+    }
+    .nav__link--last {
+      margin: 0;
+    }
+    .u-mr4 {
+      margin: 0 !important;
+    }
+  }
+
 </style>
