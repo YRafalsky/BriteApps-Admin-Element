@@ -105,7 +105,7 @@ export default {
       let token = localStorage.getItem('carrierToken')
       let chosenCompanyId = this.selectedCompany
       console.log(userId, token, chosenCompanyId)
-      this.$confirm(`Are you sure you want to delete the ${data.username}?`, 'Warning', {
+      this.$confirm(`Are you sure you want to delete the user ${data.username}?`, 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning'
@@ -116,7 +116,7 @@ export default {
         })
       }).catch(() => {
         this.$message({
-          type: 'info',
+          type: 'warning',
           message: 'Delete canceled'
         })
       })
@@ -126,10 +126,11 @@ export default {
       let token = localStorage.getItem('carrierToken')
       let chosenCompanyId = this.selectedCompany
       console.log(userId, token, chosenCompanyId)
-      this.$confirm(`Are you sure you want to reset password of ${data.username}?`, 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
+      this.$confirm(`Are you sure you want to reset password of user ${data.username}?`,
+        'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
       }).then(() => {
         this.$message({
           type: 'success',
@@ -137,7 +138,7 @@ export default {
         })
       }).catch(() => {
         this.$message({
-          type: 'info',
+          type: 'warning',
           message: 'Delete canceled'
         })
       })
@@ -208,10 +209,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+    @import '../../styles/variables';
 
     .text-details {
-        color: #666666;
+        color: $gray--080;
         font-size: .9em;
     }
 
