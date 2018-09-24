@@ -61,7 +61,10 @@
             </div>
             <span slot="footer" class="dialog-footer">
             <el-button @click="closeModal">Cancel</el-button>
-            <el-button type="primary" @keyup.native.enter="saveNewSuperUser" @click="saveNewSuperUser">Save</el-button>
+            <el-button type="primary"
+                       @keyup.native.enter="saveNewSuperUser"
+                       @click="saveNewSuperUser">Save
+            </el-button>
           </span>
         </el-dialog>
     </div>
@@ -70,12 +73,23 @@
 <script>
 import {mapGetters} from 'vuex'
 
+let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // eslint-disable-line
+
 export default {
   name: 'users-list',
   computed: {
     ...mapGetters('shared', ['availableCompanies']),
     inputValidation () {
       return this.inputData.trim() !== ''
+    },
+    emailValidationErrMessage () {
+      let errMessage = ''
+      if (this.inputData.length === 0 || !emailRegex.test(this.inputData)) {
+        errMessage = 'Please Input Correct Data'
+        this.$message(errMessage)
+      }
+      console.log('errMessage: ', errMessage)
+      return errMessage
     }
   },
   methods: {
@@ -126,10 +140,9 @@ export default {
       console.log('addSuperUser: ', e)
     },
     saveNewSuperUser () {
-      if (!this.inputValidation) {
+      if (!this.inputValidation || this.emailValidationErrMessage !== '') {
         return
       }
-      debugger
       this.centerDialogVisible = false
       let userName = this.inputData
       let token = localStorage.getItem('carrierToken')
@@ -189,30 +202,6 @@ export default {
 
 <style scoped lang="scss">
 
-    // List of users style
-    .users {
-        &__list {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            &_number {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-            &_name {
-                & > span {
-                    display: inline-block;
-                    width: 85px;
-                }
-            }
-            &_last-login {
-                display: flex;
-                padding-right: 10px;
-            }
-        }
-    }
 
     .text-details {
         color: #666666;
