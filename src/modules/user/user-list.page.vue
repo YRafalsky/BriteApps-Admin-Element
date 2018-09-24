@@ -1,6 +1,6 @@
 <template>
     <div class="users">
-        <ba-header activeModule="Emails"></ba-header>
+        <ba-header activeModule="Users"></ba-header>
         <div class="u-p4">
             <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Users List</h2>
 
@@ -50,7 +50,7 @@
                 <el-select v-model="selectedCompany" placeholder="Select">
                     <el-option disabled value="">Select</el-option>
                     <el-option
-                            v-for="company in availableCompanies"
+                            v-for="company in getAllCompanies"
                             :key="company.id"
                             :label="company.name"
                             :value="company.name">
@@ -79,6 +79,13 @@ export default {
   name: 'users-list',
   computed: {
     ...mapGetters('shared', ['availableCompanies']),
+    getAllCompanies () {
+      let chooseAllCompanies = [{
+        id: '0',
+        name: '*'
+      }]
+      return chooseAllCompanies.concat(this.availableCompanies)
+    },
     inputValidation () {
       return this.inputData.trim() !== ''
     },
