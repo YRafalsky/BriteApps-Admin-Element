@@ -3,7 +3,7 @@
         <ba-header activeModule="Users"></ba-header>
         <div class="u-p4">
             <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Users List</h2>
-
+            <!--Table list of available super users-->
             <el-table
                     :data="users"
                     style="width: 100%">
@@ -36,17 +36,18 @@
                     </template>
                 </el-table-column>
             </el-table>
-
         </div>
         <div class="u-p4">
-            <el-button @click="addSuperUser">Add Superuser</el-button>
+            <el-button @click="showModalWindow">Add Superuser</el-button>
         </div>
+        <!--Dialog Window for Adding new user-->
         <el-dialog
                 title="Add Super User"
                 :visible.sync="centerDialogVisible"
                 width="50%"
                 center>
             <div class="user-input">
+                <!--List of available Companies-->
                 <el-select v-model="selectedCompany" placeholder="Select">
                     <el-option disabled value="">Select</el-option>
                     <el-option
@@ -91,11 +92,11 @@ export default {
     },
     emailValidationErrMessage () {
       let errMessage = ''
-      if (this.inputData.length === 0 || !emailRegex.test(this.inputData)) {
+      let inputData = this.inputData.trim()
+      if (inputData.length === 0 || !emailRegex.test(inputData)) {
         errMessage = 'Please Input Correct Data'
         this.$message(errMessage)
       }
-      console.log('errMessage: ', errMessage)
       return errMessage
     }
   },
@@ -131,21 +132,20 @@ export default {
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',
           type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: 'Delete completed'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: 'Delete completed'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: 'Delete canceled'
+          })
         })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: 'Delete canceled'
-        })
-      })
     },
-    addSuperUser (e) {
+    showModalWindow () {
       this.centerDialogVisible = true
-      console.log('addSuperUser: ', e)
     },
     saveNewSuperUser () {
       if (!this.inputValidation || this.emailValidationErrMessage !== '') {
