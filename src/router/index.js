@@ -11,6 +11,8 @@ import AppearanceRoutes from '@/modules/appearance/appearance.routes'
 import TemplatesRoutes from '@/modules/templates/templates.routes'
 import EDeliveryRoutes from '@/modules/edelivery/edelivery.routes'
 import EmailsRoutes from '@/modules/emails/emails.routes'
+import InsuredActionsRoutes from '@/modules/insuredactions/insuredactions.routes'
+
 
 import CompanySelectPage from '@/modules/dashboard/company-select.page'
 import CompanyRootPage from '@/modules/dashboard/company-root.page'
@@ -37,6 +39,7 @@ let router = new Router({
         ...TemplatesRoutes,
         ...EDeliveryRoutes,
         ...EmailsRoutes,
+        ...InsuredActionsRoutes,
       ]
     },
   

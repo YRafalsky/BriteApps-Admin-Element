@@ -70,6 +70,11 @@ export default {
         name: 'Emails',
         icon: 'envelope',
       },
+      {
+        link: 'insured-actions',
+        name: 'Insured Actions',
+        icon: 'child',
+      },
     ]
     return {
       modules,
