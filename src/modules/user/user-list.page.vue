@@ -165,7 +165,7 @@ export default {
     },
     closeModal () {
       this.centerDialogVisible = false
-      this.inputData = ''
+      this.reset()
     },
     reset () {
       this.inputData = ''
