@@ -78,7 +78,9 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions, mapState} from 'vuex'
+import axios from 'axios'
+import config from '@/config'
 
 let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // eslint-disable-line
 
@@ -86,6 +88,7 @@ export default {
   name: 'users-list',
   computed: {
     ...mapGetters('shared', ['availableCompanies']),
+    ...mapState('users', ['superUsers']),
     getAllCompanies () {
       let chooseAllCompanies = [{
         id: '0',
@@ -134,26 +137,38 @@ export default {
     }
   },
   methods: {
+    ...mapActions('users', ['loadUsers']),
     removeUser (data) {
       let userId = data.user_id
-      let token = localStorage.getItem('carrierToken')
-      let chosenCompanyId = this.selectedCompany
-      console.log(userId, token, chosenCompanyId)
-      this.$confirm(`Are you sure you want to delete the user ${data.username}?`, 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: 'Delete completed'
+      let companyId = this.companyId
+      // let token = localStorage.getItem('carrierToken')
+      // console.log(userId, token, companyId)
+
+      return axios.delete(`${config.url}/company/${companyId}/portal-users/${userId}`)
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: 'Delete completed'
+          })
+        }, (e) => {
+          console.log('remove user: ', e)
         })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: 'Delete canceled'
-        })
-      })
+
+
+      // this.$confirm(`Are you sure to delete the user ${data.username}?`, 'Warning', {
+      //   confirmButtonText: 'OK',
+      //   cancelButtonText: 'Cancel',
+      //   type: 'warning'
+      // }).then(() => {
+
+      //   .catch(() => {
+      //     this.$message({
+      //       type: 'warning',
+      //       message: 'Delete canceled'
+      //     })
+      //   })
+
+      // })
     },
     resetPassword (data) {
       let userId = data.user_id
@@ -204,6 +219,23 @@ export default {
       this.inputDataPassword = ''
     },
   },
+  created () {
+    let data = {
+      token: localStorage.carrierToken,
+      companyId: this.companyId
+    }
+    this.loadUsers(data)
+      .then(() => {
+        this.isUsersDownloaded = true
+      })
+      .catch(e => {
+        this.isUsersDownloaded = false
+        this.$message({
+          type: 'error',
+          message: '' + e,
+        })
+      })
+  },
   data () {
     let companyId = this.$route.params.companyId
     let users = [
@@ -241,7 +273,8 @@ export default {
       centerDialogVisible: false,
       inputDataUsername: '',
       inputDataPassword: '',
-      selectedCompany: ''
+      selectedCompany: '',
+      isUsersDownloaded: false
     }
   },
 }
