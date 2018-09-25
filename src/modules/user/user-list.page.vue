@@ -110,7 +110,7 @@ export default {
         this.$message(errMessage)
         return
       }
-      if (!emailRegex.test(inputData)) {
+      if (inputData.length && !emailRegex.test(inputData)) {
         errMessage = 'Please Input Correct Email'
         this.$message(errMessage)
         return
@@ -125,7 +125,7 @@ export default {
         this.$message(errMessage)
         return
       }
-      if (inputData.length < 8) {
+      if (inputData.length && inputData.length < 8) {
         errMessage = 'Password should be more than 8 signs'
         this.$message(errMessage)
         return
@@ -250,6 +250,9 @@ export default {
 <style lang="scss">
     @import '../../styles/variables';
 
+    .el-input, .el-select {
+        margin-right: 10px;
+    }
     .text-details {
         color: $gray--080;
         font-size: .9em;
