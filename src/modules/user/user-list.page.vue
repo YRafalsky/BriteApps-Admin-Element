@@ -49,7 +49,7 @@
         <el-dialog
                 title="Add Super User"
                 :visible.sync="centerDialogVisible"
-                width="50%"
+                width="70%"
                 center>
             <div class="user-input">
                 <!--List of available Companies-->
@@ -62,8 +62,9 @@
                             :value="company.name">
                     </el-option>
                 </el-select>
-                <el-input placeholder="Please input new Username" type="email" v-model="inputData" required></el-input>
-                <el-button @click="reset">Clear</el-button>
+                <el-input placeholder="New Username" type="email" v-model="inputDataUsername" required></el-input>
+                <el-input placeholder="New Password" type="password" v-model="inputDataPassword" required></el-input>
+                <el-button @click="reset">Clear All</el-button>
             </div>
             <span slot="footer" class="dialog-footer">
             <el-button @click="closeModal">Cancel</el-button>
@@ -92,15 +93,42 @@ export default {
       }]
       return chooseAllCompanies.concat(this.availableCompanies)
     },
-    inputValidation () {
-      return this.inputData.trim() !== ''
-    },
-    emailValidationErrMessage () {
+    companyValidation () {
       let errMessage = ''
-      let inputData = this.inputData.trim()
-      if (inputData.length === 0 || !emailRegex.test(inputData)) {
-        errMessage = 'Please Input Correct Data'
+      if (this.selectedCompany === '') {
+        errMessage = 'Please choose company'
         this.$message(errMessage)
+        return
+      }
+      return errMessage
+    },
+    emailValidation () {
+      let errMessage = ''
+      let inputData = this.inputDataUsername.trim()
+      if (inputData.length === 0) {
+        errMessage = 'Email field is required'
+        this.$message(errMessage)
+        return
+      }
+      if (!emailRegex.test(inputData)) {
+        errMessage = 'Please Input Correct Email'
+        this.$message(errMessage)
+        return
+      }
+      return errMessage
+    },
+    passwordValidation () {
+      let errMessage
+      let inputData = this.inputDataPassword.trim()
+      if (inputData.length === 0) {
+        errMessage = 'Password field is required'
+        this.$message(errMessage)
+        return
+      }
+      if (inputData.length < 8) {
+        errMessage = 'Password should be more than 8 signs'
+        this.$message(errMessage)
+        return
       }
       return errMessage
     }
@@ -153,14 +181,18 @@ export default {
       this.centerDialogVisible = true
     },
     saveNewSuperUser () {
-      if (!this.inputValidation || this.emailValidationErrMessage !== '') {
+      if (this.companyValidation !== '') {
+        return
+      }
+      if (this.emailValidation !== '' && this.passwordValidation !== '') {
         return
       }
       this.centerDialogVisible = false
-      let userName = this.inputData
+      let userName = this.inputDataUsername
+      let psw = this.inputDataPassword
       let token = localStorage.getItem('carrierToken')
       let chosenCompanyId = this.selectedCompany
-      console.log(token, userName, chosenCompanyId)
+      console.log(token, userName, chosenCompanyId, psw)
       this.reset()
     },
     closeModal () {
@@ -168,7 +200,8 @@ export default {
       this.reset()
     },
     reset () {
-      this.inputData = ''
+      this.inputDataUsername = ''
+      this.inputDataPassword = ''
     },
   },
   data () {
@@ -206,7 +239,8 @@ export default {
       users,
       companyId,
       centerDialogVisible: false,
-      inputData: '',
+      inputDataUsername: '',
+      inputDataPassword: '',
       selectedCompany: ''
     }
   },
