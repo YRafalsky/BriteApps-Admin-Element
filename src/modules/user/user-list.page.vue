@@ -5,31 +5,36 @@
             <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Users List</h2>
             <!--Table list of available super users-->
             <el-table
+                    class="users-table"
                     :data="users"
-                    style="width: 100%">
+                    >
                 <el-table-column
                         prop="username"
                         label="Username"
-                        width="250">
+                        width="100"
+                        >
                 </el-table-column>
                 <el-table-column
+                        class-name="u-text--center"
                         prop="company"
                         label="Company"
-                        width="250">
+                        >
                 </el-table-column>
                 <el-table-column
                         prop="last_login.date"
                         label="Last Login Date"
-                        width="250">
+                        width="100"
+                        >
                 </el-table-column>
                 <el-table-column
                         prop="last_login.time"
                         label="Last Login Time"
-                        width="250">
+                        width="90"
+                        >
                 </el-table-column>
                 <el-table-column
-                        prop="[users]"
-                        label="Modify">
+                        label="Modify"
+                        class-name="u-text--center">
                     <template slot-scope="scope">
                         <el-button @click.native.prevent="resetPassword(scope.row)">Reset Password</el-button>
                         <el-button @click.native.prevent="removeUser(scope.row)">Remove</el-button>
@@ -48,7 +53,7 @@
                 center>
             <div class="user-input">
                 <!--List of available Companies-->
-                <el-select v-model="selectedCompany" placeholder="Select">
+                <el-select v-model="selectedCompany" placeholder="Select" required>
                     <el-option disabled value="">Select</el-option>
                     <el-option
                             v-for="company in getAllCompanies"
@@ -57,7 +62,7 @@
                             :value="company.name">
                     </el-option>
                 </el-select>
-                <el-input placeholder="Please input new Username" type="email" v-model="inputData"></el-input>
+                <el-input placeholder="Please input new Username" type="email" v-model="inputData" required></el-input>
                 <el-button @click="reset">Clear</el-button>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -208,12 +213,16 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
     @import '../../styles/variables';
 
     .text-details {
         color: $gray--080;
         font-size: .9em;
+    }
+
+    .users-table > .el-table__header-wrapper > .el-table__header > thead > tr > th > .cell {
+        text-align: center;
     }
 
     // Modal window
