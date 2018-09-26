@@ -193,11 +193,6 @@ export default {
             })
         }
         return deleteUser()
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Input canceled'
-        })
       })
     },
     saveNewPassword (data) {
@@ -228,11 +223,6 @@ export default {
             })
         }
         return savePassword()
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Input canceled'
-        })
       })
     },
     updateUsers () {
