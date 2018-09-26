@@ -30,7 +30,7 @@
                         label="Modify"
                         class-name="u-text--center">
                     <template slot-scope="scope">
-                        <el-button @click.native.prevent="resetPassword(scope.row)">Reset Password</el-button>
+                        <el-button @click.native.prevent="saveNewPassword(scope.row)">Reset Password</el-button>
                         <el-button @click.native.prevent="removeUser(scope.row)">Remove</el-button>
                     </template>
                 </el-table-column>
@@ -129,7 +129,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser']),
+    ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser', 'resetSuperUserPassword']),
     saveNewSuperUser () {
       if (this.companyValidation !== '') {
         return
@@ -165,51 +165,76 @@ export default {
     },
     removeUser (data) {
       if (!this.isUsersDownloaded) return
-      let deleteUser = async () => {
-        let userId = data.id
-        let companyId = this.companyId
-        let payload = {
-          userId,
-          companyId
+      this.$confirm('This will remove user. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        let deleteUser = async () => {
+          let userId = data.id
+          let companyId = this.companyId
+          let payload = {
+            userId,
+            companyId
+          }
+          await this.deleteSuperUser(payload)
+            .then(() => {
+              this.updateUsers()
+              this.$message({
+                type: 'success',
+                message: 'User Removed Successfully!'
+              })
+            }, (e) => {
+              console.log(e)
+              this.$message({
+                type: 'error',
+                message: 'Oops user was not removed...'
+              })
+            })
         }
-        await this.deleteSuperUser(payload)
-          .then(() => {
-            this.updateUsers()
-            this.$message({
-              type: 'success',
-              message: 'User Removed Successfully!'
-            })
-          }, (e) => {
-            console.log(e)
-            this.$message({
-              type: 'error',
-              message: 'Oops user was not removed...'
-            })
-          })
-      }
-      return deleteUser()
-    },
-    resetPassword (data) {
-      let userId = data.user_id
-      let token = localStorage.carrierToken
-      let chosenCompanyId = this.selectedCompany
-      console.log(userId, token, chosenCompanyId)
-      this.$confirm(`Are you sure you want to reset password of user ${data.username}?`,
-        'Warning', {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: 'Reset completed'
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'error',
-            message: 'Reset canceled'
-          })
+        return deleteUser()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Input canceled'
         })
+      })
+    },
+    saveNewPassword (data) {
+      this.$prompt('Please input your e-mail', 'Reset Password', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        customClass: 'el-input-reset-password'
+      }).then(({ value }) => {
+        let savePassword = async () => {
+          let payload = {
+            userId: data.id,
+            token: localStorage.carrierToken,
+            companyId: this.companyId,
+            password: value
+          }
+          console.log(payload)
+          await this.resetSuperUserPassword(payload)
+            .then(() => {
+              this.$message({
+                type: 'success',
+                message: 'Password Updated Successfully!'
+              })
+            }, (e) => {
+              console.log(e)
+              this.$message({
+                type: 'error',
+                message: 'Oops something was wrong...'
+              })
+            })
+        }
+        return savePassword()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Input canceled'
+        })
+      })
     },
     updateUsers () {
       let data = {
@@ -248,8 +273,10 @@ export default {
     return {
       companyId,
       centerDialogVisible: false,
+      resetPasswordVisible: false,
       inputDataUsername: '',
       inputDataPassword: '',
+      inputResetPassword: '',
       selectedCompany: '',
       isUsersDownloaded: false
     }
@@ -275,6 +302,9 @@ export default {
     // Modal window
     .user-input {
         display: flex;
+    }
+    .el-input-reset-password .el-input > .el-input__inner {
+        -webkit-text-security: disc !important;
     }
 
 </style>

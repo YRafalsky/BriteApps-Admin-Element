@@ -54,13 +54,6 @@ let usersModule = {
           return false
         })
           .catch((e) => {
-            if (error.response) {
-              console.log(e.response.data)
-            } else if (e.request) {
-              console.log(e.request)
-            } else {
-              console.log('Error', e.message)
-            }
             reject(e)
             return false
           })
@@ -80,16 +73,32 @@ let usersModule = {
           return false
         })
           .catch((e) => {
-            if (error.response) {
-              console.log(e.response.data)
-            } else if (e.request) {
-              console.log(e.request)
-            } else {
-              console.log('Error', e.message)
-            }
+            reject(e)
+            return false
+        })
+      })
+    },
+    resetSuperUserPassword (context, payload) {
+      return new Promise((resolve, reject) => {
+        let data = {
+          new_password: payload.password,
+          token: localStorage.carrierToken
+        }
+        let promise = axios.post(`${config.url}/company/${payload.companyId}/portal-users/${payload.userId}/reset-password`, data)
+        promise.then((response) => {
+          if (response.data.success) {
+            console.log('response.data: ', response)
+            resolve(response)
+          }
+        }, (e) => {
           reject(e)
           return false
         })
+          .catch((e) => {
+            console.log(e)
+            reject(e)
+            return false
+          })
       })
     }
   },
