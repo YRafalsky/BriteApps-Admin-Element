@@ -201,7 +201,7 @@ export default {
       })
     },
     saveNewPassword (data) {
-      this.$prompt('Please input your e-mail', 'Reset Password', {
+      this.$prompt('Please input your new password', 'Reset Password', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         customClass: 'el-input-reset-password'
