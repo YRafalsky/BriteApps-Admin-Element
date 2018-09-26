@@ -213,7 +213,6 @@ export default {
             companyId: this.companyId,
             password: value
           }
-          console.log(payload)
           await this.resetSuperUserPassword(payload)
             .then(() => {
               this.$message({

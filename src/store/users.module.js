@@ -39,13 +39,11 @@ let usersModule = {
     },
     deleteSuperUser (context, payload) {
       return new Promise((resolve, reject) => {
-        console.log('payload: ', payload)
         let data = {
           token: localStorage.carrierToken
         }
         let promise = axios.delete(`${config.url}/company/${payload.companyId}/portal-users/${payload.userId}/`, data)
         promise.then((response) => {
-          console.log('response: ', response)
           if (response.data.success) {
             resolve(response)
           }
@@ -62,7 +60,6 @@ let usersModule = {
     addSuperUser (context, payload) {
       console.log('Add superUser...')
       return new Promise ((resolve, reject) => {
-        console.log('payload: ', payload)
         let promise = axios.post(`${config.url}/company/${payload.company_id}/portal-users/`, payload)
         promise.then((response) => {
           if (response.data.success) {
