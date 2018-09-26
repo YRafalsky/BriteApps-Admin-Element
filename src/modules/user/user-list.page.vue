@@ -22,6 +22,11 @@
                         prop="date_joined"
                         label="Date Joined"
                         >
+                    <template slot-scope="scope">
+                        <div :title="'Time is local. \n UTC:' + scope.row.date_joined">
+                            {{scope.row.date_joined | moment('YYYY-MM-DD HH:mm')}}
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column label="Modify">
                     <template slot-scope="scope">
