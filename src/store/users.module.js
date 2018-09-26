@@ -14,8 +14,8 @@ let usersModule = {
     }
   },
   actions: {
-    loadUsers (context, payload) {
-      console.log('Loading users...')
+    loadSuperUsers (context, payload) {
+      console.log('Loading superusers...')
       return new Promise((resolve, reject) => {
         let data = {
           token: localStorage.carrierToken
@@ -32,6 +32,61 @@ let usersModule = {
         })
         .catch((e) => {
           console.log(e)
+          reject(e)
+          return false
+        })
+      })
+    },
+    deleteSuperUser (context, payload) {
+      return new Promise((resolve, reject) => {
+        console.log('payload: ', payload)
+        let data = {
+          token: localStorage.carrierToken
+        }
+        let promise = axios.delete(`${config.url}/company/${payload.companyId}/portal-users/${payload.userId}/`, data)
+        promise.then((response) => {
+          console.log('response: ', response)
+          if (response.data.success) {
+            resolve(response)
+          }
+        }, (e) => {
+          reject(e)
+          return false
+        })
+          .catch((e) => {
+            if (error.response) {
+              console.log(e.response.data)
+            } else if (e.request) {
+              console.log(e.request)
+            } else {
+              console.log('Error', e.message)
+            }
+            reject(e)
+            return false
+          })
+      })
+    },
+    addSuperUser (context, payload) {
+      console.log('Add superUser...')
+      return new Promise ((resolve, reject) => {
+        console.log('payload: ', payload)
+        let promise = axios.post(`${config.url}/company/${payload.company_id}/portal-users/`, payload)
+        promise.then((response) => {
+          if (response.data.success) {
+            resolve(response)
+          }
+        }, (e) => {
+          reject(e)
+          return false
+        })
+          .catch((e) => {
+            if (error.response) {
+              console.log(e.response.data)
+            } else if (e.request) {
+              console.log(e.request)
+            } else {
+              console.log('Error', e.message)
+            }
           reject(e)
           return false
         })

@@ -6,7 +6,7 @@
             <!--Table list of available super users-->
             <el-table
                     class="users-table"
-                    :data="users"
+                    :data="superUsers"
                     >
                 <el-table-column
                         prop="username"
@@ -16,20 +16,14 @@
                 </el-table-column>
                 <el-table-column
                         class-name="u-text--center"
-                        prop="company"
+                        prop="company_name"
                         label="Company"
                         >
                 </el-table-column>
                 <el-table-column
-                        prop="last_login.date"
-                        label="Last Login Date"
-                        width="100"
-                        >
-                </el-table-column>
-                <el-table-column
-                        prop="last_login.time"
-                        label="Last Login Time"
-                        width="90"
+                        prop="date_joined"
+                        label="Date Joined"
+                        width="120"
                         >
                 </el-table-column>
                 <el-table-column
@@ -49,7 +43,7 @@
         <el-dialog
                 title="Add Super User"
                 :visible.sync="centerDialogVisible"
-                width="70%"
+                width="80%"
                 center>
             <div class="user-input">
                 <!--List of available Companies-->
@@ -59,7 +53,7 @@
                             v-for="company in getAllCompanies"
                             :key="company.id"
                             :label="company.name"
-                            :value="company.name">
+                            :value="company.id">
                     </el-option>
                 </el-select>
                 <el-input placeholder="New Username" type="email" v-model="inputDataUsername" required></el-input>
@@ -79,8 +73,6 @@
 
 <script>
 import {mapGetters, mapActions, mapState} from 'vuex'
-import axios from 'axios'
-import config from '@/config'
 
 let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // eslint-disable-line
 
@@ -91,7 +83,7 @@ export default {
     ...mapState('users', ['superUsers']),
     getAllCompanies () {
       let chooseAllCompanies = [{
-        id: '0',
+        id: null,
         name: '*'
       }]
       return chooseAllCompanies.concat(this.availableCompanies)
@@ -137,42 +129,69 @@ export default {
     }
   },
   methods: {
-    ...mapActions('users', ['loadUsers']),
-    removeUser (data) {
-      let userId = data.user_id
-      let companyId = this.companyId
-      // let token = localStorage.getItem('carrierToken')
-      // console.log(userId, token, companyId)
-
-      return axios.delete(`${config.url}/company/${companyId}/portal-users/${userId}`)
-        .then(() => {
-          this.$message({
-            type: 'success',
-            message: 'Delete completed'
+    ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser']),
+    saveNewSuperUser () {
+      if (this.companyValidation !== '') {
+        return
+      }
+      if (this.emailValidation !== '' && this.passwordValidation !== '') {
+        return
+      }
+      let payload = {
+        username: this.inputDataUsername,
+        password: this.inputDataPassword,
+        company_id: this.selectedCompany,
+        token: localStorage.carrierToken
+      }
+      this.centerDialogVisible = false
+      let addUser = async () => {
+        await this.addSuperUser(payload)
+          .then(() => {
+            this.updateUsers()
+            this.$message({
+              type: 'success',
+              message: 'User Added Successfully!'
+            })
+          }, (e) => {
+            console.log(e)
+            this.$message({
+              type: 'error',
+              message: 'Oops user was not added...'
+            })
           })
-        }, (e) => {
-          console.log('remove user: ', e)
-        })
-
-
-      // this.$confirm(`Are you sure to delete the user ${data.username}?`, 'Warning', {
-      //   confirmButtonText: 'OK',
-      //   cancelButtonText: 'Cancel',
-      //   type: 'warning'
-      // }).then(() => {
-
-      //   .catch(() => {
-      //     this.$message({
-      //       type: 'warning',
-      //       message: 'Delete canceled'
-      //     })
-      //   })
-
-      // })
+      }
+      this.reset()
+      return addUser()
+    },
+    removeUser (data) {
+      if (!this.isUsersDownloaded) return
+      let deleteUser = async () => {
+        let userId = data.id
+        let companyId = this.companyId
+        let payload = {
+          userId,
+          companyId
+        }
+        await this.deleteSuperUser(payload)
+          .then(() => {
+            this.updateUsers()
+            this.$message({
+              type: 'success',
+              message: 'User Removed Successfully!'
+            })
+          }, (e) => {
+            console.log(e)
+            this.$message({
+              type: 'error',
+              message: 'Oops user was not removed...'
+            })
+          })
+      }
+      return deleteUser()
     },
     resetPassword (data) {
       let userId = data.user_id
-      let token = localStorage.getItem('carrierToken')
+      let token = localStorage.carrierToken
       let chosenCompanyId = this.selectedCompany
       console.log(userId, token, chosenCompanyId)
       this.$confirm(`Are you sure you want to reset password of user ${data.username}?`,
@@ -183,32 +202,34 @@ export default {
         }).then(() => {
           this.$message({
             type: 'success',
-            message: 'Delete completed'
+            message: 'Reset completed'
           })
         }).catch(() => {
           this.$message({
-            type: 'warning',
-            message: 'Delete canceled'
+            type: 'error',
+            message: 'Reset canceled'
+          })
+        })
+    },
+    updateUsers () {
+      let data = {
+        token: localStorage.carrierToken,
+        companyId: this.companyId
+      }
+      this.loadSuperUsers(data)
+        .then(() => {
+          this.isUsersDownloaded = true
+        })
+        .catch(e => {
+          this.isUsersDownloaded = false
+          this.$message({
+            type: 'error',
+            message: '' + e,
           })
         })
     },
     showModalWindow () {
       this.centerDialogVisible = true
-    },
-    saveNewSuperUser () {
-      if (this.companyValidation !== '') {
-        return
-      }
-      if (this.emailValidation !== '' && this.passwordValidation !== '') {
-        return
-      }
-      this.centerDialogVisible = false
-      let userName = this.inputDataUsername
-      let psw = this.inputDataPassword
-      let token = localStorage.getItem('carrierToken')
-      let chosenCompanyId = this.selectedCompany
-      console.log(token, userName, chosenCompanyId, psw)
-      this.reset()
     },
     closeModal () {
       this.centerDialogVisible = false
@@ -220,55 +241,11 @@ export default {
     },
   },
   created () {
-    let data = {
-      token: localStorage.carrierToken,
-      companyId: this.companyId
-    }
-    this.loadUsers(data)
-      .then(() => {
-        this.isUsersDownloaded = true
-      })
-      .catch(e => {
-        this.isUsersDownloaded = false
-        this.$message({
-          type: 'error',
-          message: '' + e,
-        })
-      })
+    this.updateUsers()
   },
   data () {
     let companyId = this.$route.params.companyId
-    let users = [
-      {
-        username: 'x@x.com',
-        user_id: '0123',
-        company: 'Company Name',
-        last_login: {
-          date: '2018-08-10',
-          time: '15:57:50'
-        },
-      },
-      {
-        username: 'y@y.com',
-        user_id: '0124',
-        company: 'Company Name',
-        last_login: {
-          date: '2018-08-10',
-          time: '15:57:50'
-        },
-      },
-      {
-        username: 'v@v.com',
-        user_id: '0124',
-        company: 'Company Name',
-        last_login: {
-          date: '2018-08-10',
-          time: '15:57:50'
-        },
-      }
-    ]
     return {
-      users,
       companyId,
       centerDialogVisible: false,
       inputDataUsername: '',
