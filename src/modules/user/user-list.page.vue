@@ -11,11 +11,9 @@
                 <el-table-column
                         prop="username"
                         label="Username"
-                        width="100"
                         >
                 </el-table-column>
                 <el-table-column
-                        class-name="u-text--center"
                         prop="company_name"
                         label="Company"
                         >
@@ -23,12 +21,9 @@
                 <el-table-column
                         prop="date_joined"
                         label="Date Joined"
-                        width="120"
                         >
                 </el-table-column>
-                <el-table-column
-                        label="Modify"
-                        class-name="u-text--center">
+                <el-table-column label="Modify">
                     <template slot-scope="scope">
                         <el-button @click.native.prevent="saveNewPassword(scope.row)">Reset Password</el-button>
                         <el-button @click.native.prevent="removeUser(scope.row)">Remove</el-button>
@@ -294,16 +289,13 @@ export default {
         font-size: .9em;
     }
 
-    .users-table > .el-table__header-wrapper > .el-table__header > thead > tr > th > .cell {
-        text-align: center;
-    }
 
     // Modal window
     .user-input {
         display: flex;
     }
     .el-input-reset-password .el-input > .el-input__inner {
-        -webkit-text-security: disc !important;
+        -webkit-text-security: disc ;
     }
 
 </style>
