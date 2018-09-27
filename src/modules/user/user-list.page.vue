@@ -52,7 +52,7 @@
                 center>
             <div class="user-input">
                 <!--List of available Companies-->
-                <div>
+                <div class="user-info">
                     <div>Company Name</div>
                     <el-select v-model="selectedCompany" placeholder="Select" required>
                         <el-option disabled value="">Select</el-option>
@@ -64,12 +64,12 @@
                         </el-option>
                     </el-select>
                 </div>
-                <div>
+                <div class="user-info">
                     <span>Email</span>
                     <el-input @keyup.native.enter="saveNewSuperUser"
                               placeholder="New Username" type="email" v-model="inputDataUsername" required></el-input>
                 </div>
-                <div>
+                <div class="user-info">
                     <span>Password</span>
                     <el-input @keyup.native.enter="saveNewSuperUser"
                               placeholder="New Password" type="password" v-model="inputDataPassword" required></el-input>
@@ -294,7 +294,7 @@ export default {
 <style lang="scss">
     @import '../../styles/variables';
 
-    .el-input, .el-select {
+    .user-info {
         margin-right: 10px;
     }
     .text-details {
@@ -312,7 +312,7 @@ export default {
     }
     .reset-btn {
         position: relative;
-        height: 38px;
+        height: 40px;
         bottom: -24px;
     }
 
