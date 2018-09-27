@@ -30,14 +30,19 @@
                 </el-table-column>
                 <el-table-column label="Modify">
                     <template slot-scope="scope">
-                        <el-button @click.native.prevent="saveNewPassword(scope.row)">Reset Password</el-button>
-                        <el-button @click.native.prevent="removeUser(scope.row)">Remove</el-button>
+                        <el-button @click="saveNewPassword(scope.row)"
+                                   @keyup.enter.native="saveNewPassword(scope.row)">Reset Password
+                        </el-button>
+                        <el-button  :disabled="user.username === scope.row.username"
+                                    @click="removeUser(scope.row)"
+                                    @keyup.enter.native="removeUser(scope.row)">Remove
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
         <div class="u-p4">
-            <el-button @click="showModalWindow">Add Superuser</el-button>
+            <el-button @click="showModalWindow" v-if="user.is_superuser">Add Superuser</el-button>
         </div>
         <!--Dialog Window for Adding new user-->
         <el-dialog
@@ -47,24 +52,33 @@
                 center>
             <div class="user-input">
                 <!--List of available Companies-->
-                <el-select v-model="selectedCompany" placeholder="Select" required>
-                    <el-option disabled value="">Select</el-option>
-                    <el-option
-                            v-for="company in getAllCompanies"
-                            :key="company.id"
-                            :label="company.name"
-                            :value="company.id">
-                    </el-option>
-                </el-select>
-                <el-input placeholder="New Username" type="email" v-model="inputDataUsername" required></el-input>
-                <el-input placeholder="New Password" type="password" v-model="inputDataPassword" required></el-input>
-                <el-button @click="reset">Clear All</el-button>
+                <div>
+                    <div>Company Name</div>
+                    <el-select v-model="selectedCompany" placeholder="Select" required>
+                        <el-option disabled value="">Select</el-option>
+                        <el-option
+                                v-for="company in getAllCompanies"
+                                :key="company.id"
+                                :label="company.name"
+                                :value="company.id">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div>
+                    <span>Email</span>
+                    <el-input @keyup.native.enter="saveNewSuperUser"
+                              placeholder="New Username" type="email" v-model="inputDataUsername" required></el-input>
+                </div>
+                <div>
+                    <span>Password</span>
+                    <el-input @keyup.native.enter="saveNewSuperUser"
+                              placeholder="New Password" type="password" v-model="inputDataPassword" required></el-input>
+                </div>
+                <el-button class="reset-btn" @click="reset">Clear All</el-button>
             </div>
             <span slot="footer" class="dialog-footer">
             <el-button @click="closeModal">Cancel</el-button>
-            <el-button type="primary"
-                       @keyup.native.enter="saveNewSuperUser"
-                       @click="saveNewSuperUser">Save
+            <el-button type="primary" @click="saveNewSuperUser">Save
             </el-button>
           </span>
         </el-dialog>
@@ -81,6 +95,7 @@ export default {
   computed: {
     ...mapGetters('shared', ['availableCompanies']),
     ...mapState('users', ['superUsers']),
+    ...mapState('shared', ['user']),
     getAllCompanies () {
       let chooseAllCompanies = [{
         id: null,
@@ -164,7 +179,10 @@ export default {
       return addUser()
     },
     removeUser (data) {
-      if (!this.isUsersDownloaded) return
+      // prohibit the removal of oneself
+      if (this.user.username === data.username) return
+      // restriction if it is not superuser
+      if (!this.isUsersDownloaded || !this.user.is_superuser) return
       this.$confirm('This will remove user. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
@@ -291,6 +309,11 @@ export default {
     }
     .el-input-reset-password .el-input > .el-input__inner {
         -webkit-text-security: disc ;
+    }
+    .reset-btn {
+        position: relative;
+        height: 38px;
+        bottom: -24px;
     }
 
 </style>
