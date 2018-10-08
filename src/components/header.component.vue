@@ -70,6 +70,11 @@ export default {
         name: 'Emails',
         icon: 'envelope',
       },
+      {
+        link: 'users',
+        name: 'Users',
+        icon: 'users',
+      },
     ]
     return {
       modules,
