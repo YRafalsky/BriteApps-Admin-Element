@@ -92,10 +92,13 @@ export default {
         })
     },
     saveModifiedHtmlContent () {
+      let companyId = this.$route.params.companyId
+
       let payload = {
         template: this.template,
         text_content: this.textValue,
         html_content: this.htmlValue,
+        companyId,
       }
       this.isEditingHtml = false
       this.saveSingleTemplate(payload)
@@ -104,6 +107,8 @@ export default {
             message: 'Content saved successfully',
             type: 'success'
           })
+        }, (e) => {
+          console.log('error', e)
         })
     }
   }
