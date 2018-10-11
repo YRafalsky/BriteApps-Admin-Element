@@ -30,7 +30,7 @@
         <ba-settings-section
             v-for="section in filteredSections"
             :key="section.name"
-            v-if="section.settings.length > 0"
+            v-if="section.settings.length > 0 && !loading"
             :section="section"
             :ref="'section__' + section.name"
         ></ba-settings-section>
@@ -144,11 +144,17 @@ export default {
   },
   data () {
     let companyId = this.$route.params.companyId
-    this.load({companyId})
+    let loading = true
+    this.load({companyId}).then(() => {
+      this.loading = false
+    }, () => {
+      console.log('load error')
+    })
     return {
       searchFilter: '',
       sectionInViewport: null,
       companyId,
+      loading,
     }
   },
   created () {
