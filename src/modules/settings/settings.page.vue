@@ -148,7 +148,8 @@ export default {
     this.load({companyId}).then(() => {
       this.loading = false
     }, () => {
-      console.log('load error')
+      this.loading = false
+      this.$message('Settings is not found. Please reload page')
     })
     return {
       searchFilter: '',

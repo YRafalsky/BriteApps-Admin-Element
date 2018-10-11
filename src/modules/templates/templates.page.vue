@@ -81,6 +81,9 @@ export default {
     let loading = true
     this.load({companyId}).then(() => {
       this.loading = false
+    }, () => {
+      this.loading = false
+      this.$message('Templates are not found. Please reload page')
     })
     return {
       searchFilter: '',
