@@ -1,7 +1,7 @@
 <template>
     <div class="users">
         <ba-header activeModule="Users"></ba-header>
-        <div class="u-p4">
+        <div class="u-p4" v-loading="loading">
             <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Users List</h2>
             <!--Table list of available super users-->
             <el-table
@@ -160,14 +160,17 @@ export default {
       }
       this.centerDialogVisible = false
       let addUser = async () => {
+        this.loading = true
         await this.addSuperUser(payload)
           .then(() => {
             this.updateUsers()
+            this.loading = false
             this.$message({
               type: 'success',
               message: 'User Added Successfully!'
             })
           }, (e) => {
+            this.loading = false
             console.log(e)
             this.$message({
               type: 'error',
@@ -195,14 +198,17 @@ export default {
             userId,
             companyId
           }
+          this.loading = true
           await this.deleteSuperUser(payload)
             .then(() => {
               this.updateUsers()
+              this.loading = false
               this.$message({
                 type: 'success',
                 message: 'User Removed Successfully!'
               })
             }, (e) => {
+              this.loading = false
               console.log(e)
               this.$message({
                 type: 'error',
@@ -226,13 +232,16 @@ export default {
             companyId: this.companyId,
             password: value
           }
+          this.loading = true
           await this.resetSuperUserPassword(payload)
             .then(() => {
+              this.loading = false
               this.$message({
                 type: 'success',
                 message: 'Password Updated Successfully!'
               })
             }, (e) => {
+              this.loading = false
               console.log(e)
               this.$message({
                 type: 'error',
@@ -248,12 +257,15 @@ export default {
         token: localStorage.carrierToken,
         companyId: this.companyId
       }
+      this.loading = true
       this.loadSuperUsers(data)
         .then(() => {
           this.isUsersDownloaded = true
+          this.loading = false
         })
         .catch(e => {
           this.isUsersDownloaded = false
+          this.loading = false
           this.$message({
             type: 'error',
             message: '' + e,
@@ -273,6 +285,7 @@ export default {
     },
   },
   created () {
+    this.loading = true
     this.updateUsers()
   },
   data () {
@@ -285,7 +298,8 @@ export default {
       inputDataPassword: '',
       inputResetPassword: '',
       selectedCompany: '',
-      isUsersDownloaded: false
+      isUsersDownloaded: false,
+      loading: false
     }
   },
 }
