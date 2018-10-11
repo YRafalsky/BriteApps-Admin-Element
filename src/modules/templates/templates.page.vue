@@ -10,8 +10,8 @@
           </div>
         </div>
       </div>
-      <div slot="main" :class="{'has-fixed-search': showFixedSearch}" v-loading="loading">
 
+      <div slot="main" :class="{'has-fixed-search': showFixedSearch}" v-if="checkTemplates">
         <h3 class="u-pt5 c-heading__page u-pb3">Templates Customization</h3>
 
         <div class="search-container-shell">
@@ -54,7 +54,8 @@
 
         <ba-single-template v-for="template in filteredTemplates"
                             :template="template"
-                            :key="template.id">
+                            :key="template.id"
+                            v-loading="loading">
 
         </ba-single-template>
 
@@ -77,14 +78,17 @@ export default {
   },
   data () {
     let companyId = this.$route.params.companyId
-
-    this.load({companyId})
+    let loading = true
+    this.load({companyId}).then(() => {
+      this.loading = false
+    })
     return {
       searchFilter: '',
       selectedLanguage: null,
       showOnlyOverridden: false,
       sectionInViewport: null,
-      isScrolled: false
+      isScrolled: false,
+      loading
     }
   },
   methods: {
@@ -124,8 +128,8 @@ export default {
   computed: {
     ...mapState('templates', ['all']),
 
-    loading () {
-      return this.all === undefined || this.all === null
+    checkTemplates () {
+      return this.all !== undefined || this.all !== null
     },
     showFixedSearch () {
       return this.isScrolled
