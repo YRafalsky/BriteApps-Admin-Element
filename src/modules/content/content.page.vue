@@ -1,8 +1,6 @@
 <template>
   <div>
-    <ba-header activeModule="Content"></ba-header>
-
-    <ba-page-with-sidebar :title="'Content'">
+    <ba-header activeModule="Content">
       <div slot="sidebar">
         <div class="c-nav__list">
           <div v-for="section in filteredSections" v-if="section.contents.length > 0">
@@ -10,6 +8,9 @@
           </div>
         </div>
       </div>
+    </ba-header>
+
+    <ba-page-with-sidebar :title="'Content'">
       <div slot="main" :class="{'has-fixed-search': showFixedSearch}" v-loading="loading">
 
         <h3 class="u-pt5 c-heading__page u-pb3">Content Customization</h3>
@@ -241,7 +242,7 @@ export default {
     z-index: 99;
     &--visible {
       position: fixed;
-      top: 3em;
+      top: 0;
       left: 0;
     }
   }

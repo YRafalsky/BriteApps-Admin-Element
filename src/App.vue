@@ -11,4 +11,7 @@ export default {
 </script>
 
 <style>
+  .main-content {
+    margin-left: 220px !important;
+  }
 </style>

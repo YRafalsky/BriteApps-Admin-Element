@@ -1,8 +1,7 @@
 <template>
     <div class="company-select__root">
         <ba-header :disableMenu="true"></ba-header>
-        <div class="u-pt4"></div>
-        <div class="u-pt4"></div>
+        <div class="main-content">
         <div class="u-text--center u-mb4">Please choose your company</div>
         <el-input type="text" class="search__input u-p4" placeholder="Search..." v-model="searchText"></el-input>
         <div class="company-select u-p4">
@@ -34,8 +33,8 @@
                         </el-button>
                     </router-link>
                 </div>
+            </div>
         </div>
-
     </div>
 </template>
 
