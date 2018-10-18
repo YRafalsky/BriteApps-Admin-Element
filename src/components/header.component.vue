@@ -1,8 +1,10 @@
 <template>
   <div class="nav-wrapper nav nav--fixed":class="isMenuCollapsed ? 'nav--collapsed' : 'nav--expanded'">
-    <el-button class="nav__menu-toggle toggle-button" @click="collapseMenu">
-      <icon name="bars"></icon>
-    </el-button>
+    <div class="nav__menu-toggle">
+      <el-button class="toggle-button" @click="collapseMenu">
+        <icon name="bars"></icon>
+      </el-button>
+    </div>
 
     <router-link v-if="!isMenuCollapsed" @click="collapseMenu" to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
@@ -247,7 +249,7 @@ export default {
       display: inline-block;
       top: 2px;
       left: 3px;
-      & > span > svg[class="fa-icon"] {
+      & > .toggle-button > span > svg[class="fa-icon"] {
         position: relative;
         top: 1px;
         right: 3px;
