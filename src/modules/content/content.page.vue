@@ -243,22 +243,31 @@ export default {
     &--visible {
       position: fixed;
       top: 0;
-      left: 0;
+      right: 0;
+
+      @media (max-width: 767px) {
+        left: 0;
+      }
+    }
+  }
+
+  .fixed-search--visible {
+    width: calc(100vw - 240px);
+
+    @media (max-width: 767px) {
+      width: 100%;
     }
   }
 
   .fixed-search--visible .fixed-search__content {
     background-color: #eeeeee;
-    padding: 1em;
-    padding-bottom: 0.5em;
+    padding: 10px 2em 0.5em;
     margin-left: 0;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.18);
-  }
 
-  @media (min-width: 1000px) {
-    .fixed-search--visible .fixed-search__content {
-        margin-left: 230px;
-      }
+    @media (max-width: 767px) {
+      padding-top: 100px;
     }
+  }
 
 </style>

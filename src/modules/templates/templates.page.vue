@@ -144,7 +144,6 @@ export default {
           continue
         }
         let first = ref[0]
-        console.log(first)
         let fixedHeaderAdjust = 100
         let currentOffset = first.$el.offsetTop - fixedHeaderAdjust
         if (nearestSection === null) {

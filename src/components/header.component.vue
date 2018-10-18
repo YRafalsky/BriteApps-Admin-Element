@@ -7,8 +7,8 @@
     <router-link v-if="!isMenuCollapsed" @click="collapseMenu" to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
     </router-link>
-    <router-link v-if="!isMenuCollapsed" @click="collapseMenu" :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./"
-                 class="nav__link nav__link--last nav__link--company u-mb4">
+    <router-link @click="collapseMenu" :disabled="isMenuCollapsed" :class="{ 'nav__link--active' : activeModule === 'dashboard', 'u-mb4' :  !isMenuCollapsed}" to="./"
+                 class="nav__link nav__link--last nav__link--company">
       {{companyNameById(companyId)}}
     </router-link>
 
@@ -19,9 +19,9 @@
       </router-link>
       <div v-if="activeModule === module.name"><slot name="sidebar"></slot></div>
     </div>
-    <a v-if="!isMenuCollapsed" @click="logout(); $event.preventDefault(); collapseMenu()" class="nav__link nav__link--sign-out u-mr4">
+    <a @click="logout(); $event.preventDefault(); collapseMenu()" class="nav__link nav__link--sign-out u-mr4">
       <icon :scale="1" name="sign-out"></icon>
-      <span class="nav__link_info">Logout</span>
+      <span v-if="!isMenuCollapsed" class="nav__link_info">Logout</span>
     </a>
   </div>
 </template>
@@ -97,14 +97,14 @@ export default {
   methods: {
     ...mapActions('login', ['logout']),
     collapseMenu () {
-      if (window.innerWidth > 768) {
+      if (window.innerWidth > 767) {
         this.isMenuCollapsed = false
       } else {
         this.isMenuCollapsed ? this.isMenuCollapsed = false : this.isMenuCollapsed = true
       }
     },
     handleScroll () {
-      window.innerWidth > 768 ? this.isMenuCollapsed = false : this.isMenuCollapsed = true
+      window.innerWidth > 767 ? this.isMenuCollapsed = false : this.isMenuCollapsed = true
     }
   },
   created () {
@@ -151,6 +151,7 @@ export default {
       position: fixed;
       height: 100%;
       max-width: none;
+      padding: 0 15px;
     }
   }
 
@@ -160,8 +161,16 @@ export default {
 
     @media (max-width: 767px) {
       width: 100vw;
-      height: 3.5em;
+      height: 5em;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
     }
+  }
+
+  .nav--expanded {
+    padding-top: 15px;
   }
 
   .nav__logo {
@@ -235,7 +244,6 @@ export default {
     }
 
     .nav__menu-toggle {
-      position: absolute;
       display: inline-block;
       top: 2px;
       left: 3px;
