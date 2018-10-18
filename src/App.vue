@@ -10,8 +10,12 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
   .main-content {
     margin-left: 220px !important;
+
+    @media (max-width: 767px) {
+      margin-left: 0 !important;
+    }
   }
 </style>

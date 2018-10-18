@@ -257,7 +257,7 @@ export default {
 
   @media (min-width: 1000px) {
     .fixed-search--visible .fixed-search__content {
-        margin-left: 220px;
+        margin-left: 230px;
       }
     }
 

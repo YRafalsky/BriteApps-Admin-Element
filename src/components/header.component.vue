@@ -1,24 +1,25 @@
 <template>
   <div class="nav-wrapper nav nav--fixed":class="isMenuCollapsed ? 'nav--collapsed' : 'nav--expanded'">
-    <el-button round class="nav__menu-toggle"  @click="isMenuCollapsed = !isMenuCollapsed">       <icon name="bars"></icon>
+    <el-button class="nav__menu-toggle toggle-button" @click="collapseMenu">
+      <icon name="bars"></icon>
     </el-button>
 
-    <router-link to="/company-select">
+    <router-link v-if="!isMenuCollapsed" @click="collapseMenu" to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
     </router-link>
-    <router-link :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./"
+    <router-link v-if="!isMenuCollapsed" @click="collapseMenu" :class="{ 'nav__link--active' : activeModule === 'dashboard' }" to="./"
                  class="nav__link nav__link--last nav__link--company u-mb4">
       {{companyNameById(companyId)}}
     </router-link>
 
-    <div class="outer" v-for="module in modules" :key="module.name">
+    <div v-if="!isMenuCollapsed" @click="collapseMenu" class="outer" v-for="module in modules" :key="module.name">
       <router-link v-if="!disableMenu"  :to="module.link"  class="nav__link" :class="{ 'nav__link--active' : activeModule === module.name }">
         <icon class="u-mr1" scale="0.75" :name="module.icon"></icon>
         {{ module.name }}
       </router-link>
       <div v-if="activeModule === module.name"><slot name="sidebar"></slot></div>
     </div>
-    <a @click="logout(); $event.preventDefault()" class="nav__link nav__link--sign-out u-mr4">
+    <a v-if="!isMenuCollapsed" @click="logout(); $event.preventDefault(); collapseMenu()" class="nav__link nav__link--sign-out u-mr4">
       <icon :scale="1" name="sign-out"></icon>
       <span class="nav__link_info">Logout</span>
     </a>
@@ -85,7 +86,7 @@ export default {
     return {
       modules,
       companyId,
-      isMenuCollapsed: true,
+      isMenuCollapsed: false
     }
   },
   computed: {
@@ -95,7 +96,23 @@ export default {
   },
   methods: {
     ...mapActions('login', ['logout']),
+    collapseMenu () {
+      if (window.innerWidth > 768) {
+        this.isMenuCollapsed = false
+      } else {
+        this.isMenuCollapsed ? this.isMenuCollapsed = false : this.isMenuCollapsed = true
+      }
+    },
+    handleScroll () {
+      window.innerWidth > 768 ? this.isMenuCollapsed = false : this.isMenuCollapsed = true
+    }
   },
+  created () {
+    window.addEventListener('resize', this.handleScroll)
+  },
+  destroyed () {
+    window.removeEventListener('resize', this.handleScroll)
+  }
 
 }
 </script>
@@ -129,6 +146,22 @@ export default {
     left: 0;
     max-width: 240px;
     overflow-y: scroll;
+    padding: 50px 15px 0;
+    @media (max-width: 767px) {
+      position: fixed;
+      height: 100%;
+      max-width: none;
+    }
+  }
+
+  .nav--collapsed {
+    width: 4em;
+    overflow: hidden;
+
+    @media (max-width: 767px) {
+      width: 100vw;
+      height: 3.5em;
+    }
   }
 
   .nav__logo {
@@ -183,35 +216,34 @@ export default {
     color: $white;
     width: 200px;
   }
+
+  // Button
+  .toggle-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    z-index: 10;
+  }
+
   .nav__menu-toggle {
     display: none;
   }
-  @media (max-width: 1524px) {
-    .nav__menu-toggle {
-      display: inline-block;
-    }
-
-    .nav--fixed {
-      position: static;
-      height: 31em;
-      text-align: center;
-    }
+  @media (max-width: 767px) {
 
     .nav__link {
-      margin: 0 0;
-      padding: 0.8em 0;
       display: block;
     }
 
     .nav__menu-toggle {
       position: absolute;
+      display: inline-block;
       top: 2px;
       left: 3px;
-    }
-
-    .nav--collapsed {
-      height: 3em;
-      overflow: hidden;
+      & > span > svg[class="fa-icon"] {
+        position: relative;
+        top: 1px;
+        right: 3px;
+      }
     }
     .u-float-right {
       float:  none !important;
