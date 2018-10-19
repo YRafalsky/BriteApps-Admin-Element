@@ -1,7 +1,7 @@
 <template>
   <div class="edelivery">
     <ba-header activeModule="E-Delivery"></ba-header>
-    <div class="edelivery__content u-p4">
+    <div class="edelivery__content u-p4 main-content">
       <h2 class="c-heading__page u-mt4 u-pt2">E-Delivery dashboard</h2>
       <div class="edelivery__table">
         <div class="edelivery__filters u-mt4">

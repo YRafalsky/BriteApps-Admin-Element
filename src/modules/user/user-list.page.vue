@@ -1,7 +1,7 @@
 <template>
     <div class="users">
         <ba-header activeModule="Users"></ba-header>
-        <div class="u-p4" v-loading="loading">
+        <div class="u-p4 main-content" v-loading="loading">
             <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Users List</h2>
             <!--Table list of available super users-->
             <el-table

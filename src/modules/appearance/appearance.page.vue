@@ -1,9 +1,9 @@
 <template>
   <div class="appearance">
     <ba-header activeModule="Appearance"></ba-header>
-    <div class="appearance__content">
-      <h2 class="c-heading__page">Appereance Customization</h2>
-      <div class="u-text--sub">To see changes to icons\logos you will need to rebuild application</div>
+    <div class="appearance__content main-content">
+      <h2 class="c-heading__page appearance__content_title">Appereance Customization</h2>
+      <div class="u-text--sub appearance__content_description">To see changes to icons\logos you will need to rebuild application</div>
       <div class="images-grid">
         <div class="single-image" v-for="image in images">
           <h2 class="c-heading__sub">{{image.slug | capitalize}}</h2>
@@ -130,9 +130,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .appearance__content {
     padding-top: 3em;
+
+    &_title, &_description {
+      padding: 0 3em;
+     }
   }
 
   .images-grid {

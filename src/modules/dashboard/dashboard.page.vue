@@ -1,8 +1,6 @@
 <template>
-  <div class="dashboard-root">
+  <div class="dashboard-root main-content">
     <ba-header active-module="dashboard"></ba-header>
-    <div class="u-pt4"></div>
-    <div class="u-pt4"></div>
     <h2 class="u-text--center u-header-padding"> {{companyNameById(companyId)}}</h2>
     <div class="u-text--sm u-text--center">Welcome {{user.username}}</div>
     <el-button class="u-ml4" @click="downloadInsuredListXls">Download insureds list</el-button>
