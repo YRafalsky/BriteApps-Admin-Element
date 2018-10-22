@@ -39,6 +39,11 @@ export default {
     let companyId = this.$route.params.companyId
     let modules = [
       {
+        link: './',
+        name: 'Enrolled users',
+        icon: 'user',
+      },
+      {
         link: {name: 'builds', query: { mode: 'mobile' }},
         name: 'Builds',
         icon: 'rocket',
@@ -80,8 +85,8 @@ export default {
         icon: 'envelope',
       },
       {
-        link: 'users',
-        name: 'Users',
+        link: 'administrators',
+        name: 'Administrators',
         icon: 'users',
       },
     ]
