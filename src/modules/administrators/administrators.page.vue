@@ -6,10 +6,31 @@
             <div class="u-pb4">
                 <el-button v-if="user.is_superuser" @click="showModalWindow">Add Administrator</el-button>
             </div>
+            <div class="block u-pb4">
+                <span class="demonstration">From</span>
+                <el-date-picker
+                        v-model="pickerDateFrom"
+                        type="date"
+                        placeholder="Pick a date"
+                        default-value="10-22-2018"
+                        format="MM/dd/yyyy"
+                        >
+                </el-date-picker>
+                <span class="demonstration">To</span>
+                <el-date-picker
+                        v-model="pickerDateTo"
+                        type="date"
+                        placeholder="Pick a date"
+                        default-value="10-23-2018"
+                        format="MM/dd/yyyy"
+                        >
+                </el-date-picker>
+                <el-button icon="el-icon-search" v-on:click="showFilteredUsers">Filter</el-button>
+            </div>
             <!--Table list of available super users-->
             <el-table
                     class="users-table"
-                    :data="superUsers"
+                    :data="filterUsers"
                     >
                 <el-table-column
                         prop="username"
@@ -95,6 +116,7 @@
 
 <script>
 import {mapGetters, mapActions, mapState} from 'vuex'
+import * as moment from 'moment'
 
 let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // eslint-disable-line
 
@@ -104,6 +126,15 @@ export default {
     ...mapGetters('shared', ['availableCompanies']),
     ...mapState('users', ['superUsers']),
     ...mapState('shared', ['user']),
+    filterUsers () {
+      if (!this.momentFrom || !this.momentTo) {
+        return this.superUsers
+      }
+      return this.superUsers.filter((el) => {
+        let superUserDate = Number(new Date(el.date_joined))
+        return this.momentFrom < superUserDate && superUserDate < this.momentTo
+      })
+    },
     getAllCompanies () {
       let chooseAllCompanies = [{
         id: null,
@@ -153,10 +184,11 @@ export default {
   },
   methods: {
     ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser', 'resetSuperUserPassword']),
-    getCompanyName (el) {
-      let name
-      el !== '*' ? name = '' : name = el
-      return name
+    showFilteredUsers () {
+      let dateFrom = new Date(this.pickerDateFrom)
+      let dateTo = new Date(this.pickerDateTo)
+      this.momentFrom = parseInt(moment(dateFrom).format('x'))
+      this.momentTo = parseInt(moment(dateTo).format('x'))
     },
     saveNewSuperUser () {
       if (this.companyValidation !== '') {
@@ -312,7 +344,11 @@ export default {
       inputResetPassword: '',
       selectedCompany: '',
       isUsersDownloaded: false,
-      loading: false
+      loading: false,
+      momentFrom: '',
+      momentTo: '',
+      pickerDateFrom: '',
+      pickerDateTo: ''
     }
   },
 }
