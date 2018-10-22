@@ -3,6 +3,9 @@
         <ba-header activeModule="Administrators"></ba-header>
         <div class="u-p4 main-content" v-loading="loading">
             <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Administrators</h2>
+            <div class="u-pb4">
+                <el-button v-if="user.is_superuser" @click="showModalWindow">Add Administrator</el-button>
+            </div>
             <!--Table list of available super users-->
             <el-table
                     class="users-table"
@@ -10,25 +13,32 @@
                     >
                 <el-table-column
                         prop="username"
-                        label="Username"
+                        label="User Name / E-Mail"
+                        sortable
                         >
                 </el-table-column>
                 <el-table-column
-                        prop="company_name"
+                        prop="xer"
                         label="Company"
+                        sortable
                         >
+                    <template slot-scope="scope">
+                        <i v-if="scope.row.company_name === '*'" class="el-icon-star-on"></i>
+                        <span v-if="scope.row.company_name !== '*'" >{{ scope.row.company_name }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="date_joined"
                         label="Date Joined"
+                        sortable
                         >
                     <template slot-scope="scope">
                         <div :title="'Time is local. \n UTC:' + scope.row.date_joined">
-                            {{scope.row.date_joined | moment('YYYY-MM-DD HH:mm')}}
+                            {{scope.row.date_joined | moment('MM-DD-YYYY HH:mm')}}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="Modify">
+                <el-table-column label="Actions">
                     <template slot-scope="scope">
                         <el-button @click="saveNewPassword(scope.row)"
                                    @keyup.enter.native="saveNewPassword(scope.row)">Reset Password
@@ -41,12 +51,10 @@
                 </el-table-column>
             </el-table>
         </div>
-        <div class="u-p4">
-            <el-button @click="showModalWindow" v-if="user.is_superuser">Add Superuser</el-button>
-        </div>
+
         <!--Dialog Window for Adding new user-->
         <el-dialog
-                title="Add Super User"
+                title="Add Administrator"
                 :visible.sync="centerDialogVisible"
                 width="80%"
                 center>
@@ -67,12 +75,12 @@
                 <div class="user-info">
                     <span>Email</span>
                     <el-input @keyup.native.enter="saveNewSuperUser"
-                              placeholder="New Username" type="email" v-model="inputDataUsername" required></el-input>
+                              placeholder="Email" type="email" v-model="inputDataUsername" required></el-input>
                 </div>
                 <div class="user-info">
                     <span>Password</span>
                     <el-input @keyup.native.enter="saveNewSuperUser"
-                              placeholder="New Password" type="password" v-model="inputDataPassword" required></el-input>
+                              placeholder="Password" type="password" v-model="inputDataPassword" required></el-input>
                 </div>
                 <el-button class="reset-btn" @click="reset">Clear All</el-button>
             </div>
@@ -91,7 +99,7 @@ import {mapGetters, mapActions, mapState} from 'vuex'
 let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // eslint-disable-line
 
 export default {
-  name: 'users-list',
+  name: 'administrators',
   computed: {
     ...mapGetters('shared', ['availableCompanies']),
     ...mapState('users', ['superUsers']),
@@ -145,6 +153,11 @@ export default {
   },
   methods: {
     ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser', 'resetSuperUserPassword']),
+    getCompanyName (el) {
+      let name
+      el !== '*' ? name = '' : name = el
+      return name
+    },
     saveNewSuperUser () {
       if (this.companyValidation !== '') {
         return
