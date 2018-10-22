@@ -255,9 +255,6 @@ export default {
     color: #fff;
     background-color: #409EFF;
   }
-  .edelivery .el-loading-mask{
-    z-index: 799;
-  }
 
 </style>
 
