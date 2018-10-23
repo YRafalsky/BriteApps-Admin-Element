@@ -40,7 +40,7 @@
                         >
                 </el-table-column>
                 <el-table-column
-                        prop="xer"
+                        prop="company_name"
                         label="Company"
                         sortable
                         >
