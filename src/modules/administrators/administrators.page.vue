@@ -25,7 +25,8 @@
                         format="MM/dd/yyyy"
                         >
                 </el-date-picker>
-                <el-button icon="el-icon-search" v-on:click="showFilteredUsers">Filter</el-button>
+                <el-button icon="el-icon-search" @click="showFilteredUsers">Filter</el-button>
+                <el-button v-if="pickerDateFrom !== '' || pickerDateTo !== ''" @click="clearFilteredUsers">Clear</el-button>
             </div>
             <!--Table list of available super users-->
             <el-table
@@ -189,6 +190,13 @@ export default {
       let dateTo = new Date(this.pickerDateTo)
       this.momentFrom = parseInt(moment(dateFrom).format('x'))
       this.momentTo = parseInt(moment(dateTo).format('x'))
+    },
+    clearFilteredUsers () {
+      this.momentFrom = ''
+      this.momentTo = ''
+      this.pickerDateFrom = ''
+      this.pickerDateTo = ''
+      this.filterUsers = this.superUsers
     },
     saveNewSuperUser () {
       if (this.companyValidation !== '') {
