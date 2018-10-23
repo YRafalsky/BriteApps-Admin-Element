@@ -30,13 +30,13 @@
       <el-button v-if="pickerDateFrom !== '' || pickerDateTo !== ''"
                  @click="clearFilteredUsers"
                  @keyup.enter.native="clearFilteredUsers"
-      >Clear</el-button>
+      >Clear selection</el-button>
     </div>
 
       <el-table
               v-if="isUsersListDownloaded"
               class="users-table u-ml4 u-mt4"
-              :data="usersArray"
+              :data="filterUsers"
       >
         <el-table-column
                 label="User Name"
@@ -122,6 +122,17 @@ export default {
   computed: {
     ...mapState('shared', ['user', 'users']),
     ...mapGetters('shared', ['companyNameById']),
+    filterUsers () {
+      if (!this.momentFrom || !this.momentTo) {
+        this.usersArray = _.values(this.users)
+        return this.usersArray
+      }
+      this.usersArray = this.usersArray.filter((el) => {
+        let superUserDate = Number(new Date(el.ba_registered_date))
+        return this.momentFrom < superUserDate && superUserDate < this.momentTo
+      })
+      return this.usersArray
+    },
   },
   methods: {
     ...mapActions('shared', ['getInsureds', 'getSuperuserCredentials']),
@@ -136,16 +147,7 @@ export default {
       this.momentTo = ''
       this.pickerDateFrom = ''
       this.pickerDateTo = ''
-      this.filterUsers = this.usersArray
-    },
-    filterUsers () {
-      if (!this.momentFrom || !this.momentTo) {
-        return this.superUsers
-      }
-      return this.superUsers.filter((el) => {
-        let superUserDate = Number(new Date(el.date_joined))
-        return this.momentFrom < superUserDate && superUserDate < this.momentTo
-      })
+      return () => this.filterUsers
     },
     urlForAttachment (fileId) {
       return config.url + '/get_attachment_all/?file_id=' + fileId + '&company_id=' + this.companyId
