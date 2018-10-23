@@ -45,7 +45,7 @@
                         sortable
                         >
                     <template slot-scope="scope">
-                        <i v-if="scope.row.company_name === '*'" class="el-icon-star-on"></i>
+                        <span v-if="scope.row.company_name === '*'">All Companies</span>
                         <span v-if="scope.row.company_name !== '*'" >{{ scope.row.company_name }}</span>
                     </template>
                 </el-table-column>
@@ -220,14 +220,14 @@ export default {
             this.loading = false
             this.$message({
               type: 'success',
-              message: 'User Added Successfully!'
+              message: 'Administrator Added Successfully!'
             })
           }, (e) => {
             this.loading = false
             console.log(e)
             this.$message({
               type: 'error',
-              message: 'Oops user was not added...'
+              message: 'Oops administrator was not added...'
             })
           })
       }
@@ -239,7 +239,7 @@ export default {
       if (this.user.username === data.username) return
       // restriction if it is not superuser
       if (!this.isUsersDownloaded || !this.user.is_superuser) return
-      this.$confirm('This will remove user. Continue?', 'Warning', {
+      this.$confirm('This will remove administrator. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning'
@@ -258,14 +258,14 @@ export default {
               this.loading = false
               this.$message({
                 type: 'success',
-                message: 'User Removed Successfully!'
+                message: 'Administrator Removed Successfully!'
               })
             }, (e) => {
               this.loading = false
               console.log(e)
               this.$message({
                 type: 'error',
-                message: 'Oops user was not removed...'
+                message: 'Oops administrator was not removed...'
               })
             })
         }
