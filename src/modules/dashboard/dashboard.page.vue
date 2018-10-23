@@ -1,37 +1,98 @@
 <template>
-  <div class="dashboard-root main-content">
+  <div v-loading="loading" class="dashboard-root main-content">
     <ba-header active-module="dashboard"></ba-header>
     <h2 class="u-text--center u-header-padding"> {{companyNameById(companyId)}}</h2>
     <div class="u-text--sm u-text--center">Welcome {{user.username}}</div>
-    <el-button class="u-ml4" @click="downloadInsuredListXls">Download insureds list</el-button>
-    <el-row v-if="isUsersListDownloaded" class="container">
-      <el-col class="users-list" :span="24">
-        <div class="el-card" v-for="(userItem, i) in users" :key="i">
-          <div class="users-list__view">
-            <div>
-              <div class="el-card__name">{{userItem.name}}</div>
-              <div class="el-card__tel" v-if="!userItem.phones.length">
-                <i class="el-icon-phone-outline"></i>No Data
-              </div>
-              <div class="el-card__tel" v-if="userItem.phones.length">
-                <i class="el-icon-phone-outline"></i>{{userItem.phones[0].phone}}
-              </div>
-              <div class="el-card__address" v-if="userItem.addresses.length">
-                <p><i class="el-icon-location-outline"></i>{{userItem.addresses[0].address_country}}, {{userItem.addresses[0].address_city}}</p>
-                <p><i class="el-icon-location-outline"></i>{{userItem.addresses[0].address_zip}}, {{userItem.addresses[0].address_line1}}</p>
-              </div>
-              <el-button size="mini" @click="getSuperuserCredentialsClick(userItem.id)" v-if="user.is_superuser">
-                <p>Login as Superuser</p>
-              </el-button>
-            </div>
-            <div class="users-list__view_icon">
-              <div v-if="userItem.photo_id" class="el-card__photo"><img :src="urlForAttachment(userItem.photo_id)"></div>
-              <div v-if="!userItem.photo_id" class="el-card__photo"><img :src="iconUser" alt="user photo"></div>
-            </div>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
+    <el-button class="u-ml4" @click="downloadInsuredListXls">Download registered user list</el-button>
+
+    <div v-if="isUsersListDownloaded" class="block u-ml4 u-mt4">
+      <span class="demonstration">From</span>
+      <el-date-picker
+              v-model="pickerDateFrom"
+              type="date"
+              placeholder="Pick a date"
+              default-value="10-22-2018"
+              format="MM/dd/yyyy"
+      >
+      </el-date-picker>
+      <span class="demonstration">To</span>
+      <el-date-picker
+              v-model="pickerDateTo"
+              type="date"
+              placeholder="Pick a date"
+              default-value="10-23-2018"
+              format="MM/dd/yyyy"
+      >
+      </el-date-picker>
+      <el-button icon="el-icon-search"
+                 @click="showFilteredUsers"
+                 @keyup.enter.native="showFilteredUsers">Filter</el-button>
+      <el-button v-if="pickerDateFrom !== '' || pickerDateTo !== ''"
+                 @click="clearFilteredUsers"
+                 @keyup.enter.native="clearFilteredUsers"
+      >Clear</el-button>
+    </div>
+
+      <el-table
+              v-if="isUsersListDownloaded"
+              class="users-table u-ml4 u-mt4"
+              :data="usersArray"
+      >
+        <el-table-column
+                label="User Name"
+                prop="name"
+                sortable
+        ></el-table-column>
+        <el-table-column
+                label="User Login"
+                prop="ba_username"
+                sortable
+        >
+        </el-table-column>
+        <el-table-column
+                label="Registration Date"
+                prop="ba_registered_date"
+                sortable
+        >
+        </el-table-column>
+        <el-table-column
+                label="Phone Number"
+                prop="phones[0].phone"
+                width="150"
+        >
+        </el-table-column>
+        <el-table-column
+                label="Address"
+                class-name="adress-data"
+                prop="addresses[0].address_country"
+                width="75"
+        >
+        </el-table-column>
+          <el-table-column
+                  label=""
+                  class-name="adress-data"
+                  prop="addresses[0].address_city"
+                  width="90"
+          >
+          </el-table-column>
+            <el-table-column
+                    label=""
+                    class-name="adress-data"
+                    prop="addresses[0].address_line1"
+                    width="150"
+            >
+            </el-table-column>
+        <el-table-column
+                label="Login as Superuser"
+                class-name="adress-data"
+          >
+          <template slot-scope="scope">
+            <el-button v-if="user.is_superuser" size="mini" @click="getSuperuserCredentialsClick(scope.row.id)">
+              Login as
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
   </div>
 </template>
 
@@ -39,6 +100,8 @@
 import {mapState, mapGetters, mapActions} from 'vuex'
 import iconUser from '../../assets/non-user.svg'
 import config from '@/config'
+import _ from 'lodash'
+import * as moment from 'moment'
 
 export default {
   name: 'ba-dashboard',
@@ -47,7 +110,13 @@ export default {
     return {
       companyId,
       iconUser,
-      isUsersListDownloaded: false
+      isUsersListDownloaded: false,
+      usersArray: null,
+      loading: false,
+      momentFrom: '',
+      momentTo: '',
+      pickerDateFrom: '',
+      pickerDateTo: ''
     }
   },
   computed: {
@@ -56,6 +125,28 @@ export default {
   },
   methods: {
     ...mapActions('shared', ['getInsureds', 'getSuperuserCredentials']),
+    showFilteredUsers () {
+      let dateFrom = new Date(this.pickerDateFrom)
+      let dateTo = new Date(this.pickerDateTo)
+      this.momentFrom = parseInt(moment(dateFrom).format('x'))
+      this.momentTo = parseInt(moment(dateTo).format('x'))
+    },
+    clearFilteredUsers () {
+      this.momentFrom = ''
+      this.momentTo = ''
+      this.pickerDateFrom = ''
+      this.pickerDateTo = ''
+      this.filterUsers = this.usersArray
+    },
+    filterUsers () {
+      if (!this.momentFrom || !this.momentTo) {
+        return this.superUsers
+      }
+      return this.superUsers.filter((el) => {
+        let superUserDate = Number(new Date(el.date_joined))
+        return this.momentFrom < superUserDate && superUserDate < this.momentTo
+      })
+    },
     urlForAttachment (fileId) {
       return config.url + '/get_attachment_all/?file_id=' + fileId + '&company_id=' + this.companyId
     },
@@ -80,7 +171,8 @@ export default {
         })
     }
   },
-  created () {
+  mounted () {
+    this.loading = true
     this.getInsureds(this.companyId)
       .then(() => {
         this.isUsersListDownloaded = true
@@ -92,12 +184,23 @@ export default {
           message: '' + e,
         })
       })
+      .finally(() => {
+        this.loading = false
+      })
+    const array = _.values(this.users)
+    this.usersArray = array
   }
 }
 </script>
 <style lang="scss">
 
   @import '../../styles/variables';
+
+  .adress-data > div.cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   .users-list {
     display: grid;
