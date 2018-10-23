@@ -343,9 +343,6 @@ export default {
 }
 </script>
 <style>
-  .build-details__root  .el-loading-mask{
-      z-index: 799;
-  }
 
   .build__pre {
     background-color: #eeeeee;

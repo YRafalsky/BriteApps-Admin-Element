@@ -1,8 +1,9 @@
 <template>
-  <div class="dashboard-root main-content">
+  <div class="dashboard-root main-content"  v-loading="loading">
     <ba-header active-module="dashboard"></ba-header>
-    <h2 class="u-text--center u-header-padding"> {{companyNameById(companyId)}}</h2>
-    <div class="u-text--sm u-text--center">Welcome {{user.username}}</div>
+    <h2 class="u-pt5 u-pl4 u-pb5 u-mt2 c-heading__page">Enrolled Users</h2>
+    <h2 class="u-pl4 u-header-padding"> {{companyNameById(companyId)}}</h2>
+    <div class="u-pl4 u-text--sm u-pb3">Welcome {{user.username}}</div>
     <el-button class="u-ml4" @click="downloadInsuredListXls">Download insureds list</el-button>
     <el-row v-if="isUsersListDownloaded" class="container">
       <el-col class="users-list" :span="24">
@@ -47,7 +48,8 @@ export default {
     return {
       companyId,
       iconUser,
-      isUsersListDownloaded: false
+      isUsersListDownloaded: false,
+      loading: true
     }
   },
   computed: {
@@ -81,6 +83,7 @@ export default {
     }
   },
   created () {
+    this.loading = true
     this.getInsureds(this.companyId)
       .then(() => {
         this.isUsersListDownloaded = true
@@ -91,6 +94,8 @@ export default {
           type: 'error',
           message: '' + e,
         })
+      }).finally(() => {
+        this.loading = false
       })
   }
 }
