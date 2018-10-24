@@ -32,3 +32,8 @@
     width: 20%;
     float: left;
 }
+
+.el-loading-mask {
+    z-index: 998;
+    background-color: rgba(249, 251, 251, .9);
+}
