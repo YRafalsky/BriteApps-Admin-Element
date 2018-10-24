@@ -196,7 +196,6 @@ export default {
       this.momentTo = ''
       this.pickerDateFrom = ''
       this.pickerDateTo = ''
-      this.filterUsers = this.superUsers
     },
     saveNewSuperUser () {
       if (this.companyValidation !== '') {
