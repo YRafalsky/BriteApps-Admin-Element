@@ -9,7 +9,8 @@
     <router-link v-if="!isMenuCollapsed" @click="collapseMenu" to="/company-select">
       <img class="nav__logo nav__logo--img u-img-responsive" alt="BriteApps" src="../assets/briteappslogonotagline.png">
     </router-link>
-    <router-link @click="collapseMenu" :disabled="isMenuCollapsed" :class="{ 'nav__link--active' : activeModule === 'dashboard', 'u-mb4' :  !isMenuCollapsed}" to="./"
+    <router-link @click="collapseMenu" :disabled="isMenuCollapsed" to="./"
+                 :class="{ 'nav__link--active' : activeModule === 'dashboard', 'u-mb4' :  !isMenuCollapsed, 'hidden-company': disableMenu}"
                  class="nav__link nav__link--last nav__link--company">
       {{companyNameById(companyId)}}
     </router-link>
@@ -143,6 +144,10 @@ export default {
 
   ::-webkit-scrollbar {
     display: none;
+  }
+
+  .hidden-company {
+    display: none !important;
   }
 
   .nav--fixed {

@@ -54,6 +54,7 @@
                 label="Registration Date"
                 prop="ba_registered_date"
                 sortable
+                :sort-method="sortDateColumn"
         >
         </el-table-column>
         <el-table-column
@@ -137,6 +138,17 @@ export default {
   },
   methods: {
     ...mapActions('shared', ['getInsureds', 'getSuperuserCredentials']),
+    sortDateColumn (a, b) {
+      let datefrom = parseInt(moment(a.ba_registered_date).format('x'))
+      let dateTo = parseInt(moment(b.ba_registered_date).format('x'))
+      if (datefrom > dateTo) {
+        return 1
+      } if (datefrom < dateTo) {
+        return -1
+      } else {
+        return 0
+      }
+    },
     showFilteredUsers () {
       this.getAllUsers()
       let dateFrom = new Date(this.pickerDateFrom)

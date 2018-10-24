@@ -53,6 +53,7 @@
                         prop="date_joined"
                         label="Date Joined"
                         sortable
+                        :sort-method="sortDateJoined"
                         >
                     <template slot-scope="scope">
                         <div :title="'Time is local. \n UTC:' + scope.row.date_joined">
@@ -185,6 +186,17 @@ export default {
   },
   methods: {
     ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser', 'resetSuperUserPassword']),
+    sortDateJoined (a, b) {
+      let datefrom = parseInt(moment(a.date_joined).format('x'))
+      let dateTo = parseInt(moment(b.date_joined).format('x'))
+      if (datefrom > dateTo) {
+        return 1
+      } if (datefrom < dateTo) {
+        return -1
+      } else {
+        return 0
+      }
+    },
     showFilteredUsers () {
       let dateFrom = new Date(this.pickerDateFrom)
       let dateTo = new Date(this.pickerDateTo)
