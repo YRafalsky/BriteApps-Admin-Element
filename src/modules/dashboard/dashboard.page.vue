@@ -137,10 +137,14 @@ export default {
   methods: {
     ...mapActions('shared', ['getInsureds', 'getSuperuserCredentials']),
     showFilteredUsers () {
+      this.getAllUsers()
       let dateFrom = new Date(this.pickerDateFrom)
       let dateTo = new Date(this.pickerDateTo)
       this.momentFrom = parseInt(moment(dateFrom).format('x'))
       this.momentTo = parseInt(moment(dateTo).format('x'))
+    },
+    getAllUsers () {
+      this.usersArray = _.values(this.users)
     },
     clearFilteredUsers () {
       this.momentFrom = ''
@@ -189,8 +193,7 @@ export default {
       .finally(() => {
         this.loading = false
       })
-    const array = _.values(this.users)
-    this.usersArray = array
+    this.getAllUsers()
   }
 }
 </script>
