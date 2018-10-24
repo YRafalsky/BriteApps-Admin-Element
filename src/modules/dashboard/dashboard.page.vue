@@ -88,7 +88,7 @@
           >
           <template slot-scope="scope">
             <el-button v-if="user.is_superuser" size="mini" @click="getSuperuserCredentialsClick(scope.row.id)">
-              Login as
+              Login
             </el-button>
           </template>
         </el-table-column>
