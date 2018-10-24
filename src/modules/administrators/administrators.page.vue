@@ -130,13 +130,11 @@ export default {
     filterUsers () {
       if (!this.momentFrom || !this.momentTo) {
         return this.superUsers
-        // return this.administratorsList
       }
       return this.superUsers.filter((el) => {
         let superUserDate = Number(new Date(el.date_joined))
         return this.momentFrom < superUserDate && superUserDate < this.momentTo
       })
-//      return this.administratorsList
     },
     getAllCompanies () {
       let chooseAllCompanies = [{
@@ -187,11 +185,7 @@ export default {
   },
   methods: {
     ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser', 'resetSuperUserPassword']),
-    getAllUsers () {
-//      this.administratorsList = this.superUsers
-    },
     showFilteredUsers () {
-      this.getAllUsers()
       let dateFrom = new Date(this.pickerDateFrom)
       let dateTo = new Date(this.pickerDateTo)
       this.momentFrom = parseInt(moment(dateFrom).format('x'))
@@ -202,7 +196,6 @@ export default {
       this.momentTo = ''
       this.pickerDateFrom = ''
       this.pickerDateTo = ''
-//      return () => this.filterUsers
     },
     saveNewSuperUser () {
       if (this.companyValidation !== '') {
@@ -362,8 +355,7 @@ export default {
       momentFrom: '',
       momentTo: '',
       pickerDateFrom: '',
-      pickerDateTo: '',
-//      administratorsList: null
+      pickerDateTo: ''
     }
   },
 }
