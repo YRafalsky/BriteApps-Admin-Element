@@ -151,7 +151,6 @@ export default {
       this.momentTo = ''
       this.pickerDateFrom = ''
       this.pickerDateTo = ''
-      return () => this.filterUsers
     },
     urlForAttachment (fileId) {
       return config.url + '/get_attachment_all/?file_id=' + fileId + '&company_id=' + this.companyId
