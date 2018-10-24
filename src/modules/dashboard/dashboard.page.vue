@@ -1,6 +1,7 @@
 <template>
   <div v-loading="loading" class="dashboard-root main-content">
-    <ba-header active-module="dashboard"></ba-header>
+    <ba-header active-module="Enrolled users"></ba-header>
+    <h2 class="c-heading__page u-mt4 u-pt2 u-pb3 u-ml4">Enrolled Users</h2>
     <h2 class="u-text--center u-header-padding"> {{companyNameById(companyId)}}</h2>
     <div class="u-text--sm u-text--center">Welcome {{user.username}}</div>
     <el-button class="u-ml4" @click="downloadInsuredListXls">Download registered user list</el-button>
@@ -35,7 +36,7 @@
 
       <el-table
               v-if="isUsersListDownloaded"
-              class="users-table u-ml4 u-mt4"
+              class="users-table u-ml4 u-mt4 u-mr3"
               :data="filterUsers"
       >
         <el-table-column
@@ -200,6 +201,9 @@ export default {
 
   @import '../../styles/variables';
 
+  .users-table {
+    width: auto !important;
+  }
   .adress-data > div.cell {
     overflow: hidden;
     text-overflow: ellipsis;
