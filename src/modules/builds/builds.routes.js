@@ -1,7 +1,7 @@
 import RootPage from './build.page.vue'
 import NewBuildPage from './new-build.page.vue'
 import BuildDetailPage from './build-details.page.vue'
-import DesktopBuildDetailPage from './desktop-build-details.page'
+import DesktopBuildDetailPage from './desktop-build-details.page.vue'
 
 let buildsRoutes = [
   {

@@ -1,7 +1,7 @@
 <template>
   <div class="build-details">
     <ba-header activeModule="Desktop Builds"></ba-header>
-    <div v-loading="loading" class="build-details__root ">
+    <div v-loading="loading" class="build-details__root main-content">
       <div class="u-pt4"></div>
       <div class="u-pt4"></div>
       <h2 class="u-text--center">Build {{ humanBuildId }} Details</h2>
