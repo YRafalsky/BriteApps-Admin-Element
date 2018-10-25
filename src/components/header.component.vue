@@ -86,6 +86,11 @@ export default {
         icon: 'envelope',
       },
       {
+        link: 'insured-actions',
+        name: 'Insured Actions',
+        icon: 'child',
+      },
+      {
         link: 'administrators',
         name: 'Administrators',
         icon: 'users',
