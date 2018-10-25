@@ -1,7 +1,7 @@
 <template>
   <div class="edelivery">
     <ba-header activeModule="E-Delivery"></ba-header>
-    <div class="edelivery__content u-p4">
+    <div class="edelivery__content u-p4 main-content">
       <h2 class="c-heading__page u-mt4 u-pt2">E-Delivery dashboard</h2>
       <div class="edelivery__table">
         <div class="edelivery__filters u-mt4">
@@ -254,9 +254,6 @@ export default {
   .edelivery .el-pager li.active {
     color: #fff;
     background-color: #409EFF;
-  }
-  .edelivery .el-loading-mask{
-    z-index: 799;
   }
 
 </style>

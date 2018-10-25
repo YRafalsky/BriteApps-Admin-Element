@@ -1,0 +1,401 @@
+<template>
+    <div class="users">
+        <ba-header activeModule="Administrators"></ba-header>
+        <div class="u-p4 main-content" v-loading="loading">
+            <h2 class="c-heading__page u-mt4 u-pt2 u-pb3">Administrators</h2>
+            <div class="u-pb4">
+                <el-button v-if="user.is_superuser" @click="showModalWindow">Add Administrator</el-button>
+            </div>
+            <div class="block u-pb4">
+                <span class="demonstration">From</span>
+                <el-date-picker
+                        v-model="pickerDateFrom"
+                        type="date"
+                        placeholder="Pick a date"
+                        default-value="10-22-2018"
+                        format="MM/dd/yyyy"
+                        >
+                </el-date-picker>
+                <span class="demonstration">To</span>
+                <el-date-picker
+                        v-model="pickerDateTo"
+                        type="date"
+                        placeholder="Pick a date"
+                        default-value="10-23-2018"
+                        format="MM/dd/yyyy"
+                        >
+                </el-date-picker>
+                <el-button icon="el-icon-search" @click="showFilteredUsers">Filter</el-button>
+                <el-button v-if="pickerDateFrom !== '' || pickerDateTo !== ''" @click="clearFilteredUsers">Clear</el-button>
+            </div>
+            <!--Table list of available super users-->
+            <el-table
+                    class="users-table"
+                    :data="filterUsers"
+                    >
+                <el-table-column
+                        prop="username"
+                        label="User Name / E-Mail"
+                        sortable
+                        >
+                </el-table-column>
+                <el-table-column
+                        prop="company_name"
+                        label="Company"
+                        sortable
+                        >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.company_name === '*'">All Companies</span>
+                        <span v-if="scope.row.company_name !== '*'" >{{ scope.row.company_name }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="date_joined"
+                        label="Date Joined"
+                        sortable
+                        :sort-method="sortDateJoined"
+                        >
+                    <template slot-scope="scope">
+                        <div :title="'Time is local. \n UTC:' + scope.row.date_joined">
+                            {{scope.row.date_joined | moment('MM-DD-YYYY HH:mm')}}
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Actions">
+                    <template slot-scope="scope">
+                        <el-button @click="saveNewPassword(scope.row)"
+                                   @keyup.enter.native="saveNewPassword(scope.row)">Reset Password
+                        </el-button>
+                        <el-button  :disabled="user.username === scope.row.username"
+                                    @click="removeUser(scope.row)"
+                                    @keyup.enter.native="removeUser(scope.row)">Remove
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <!--Dialog Window for Adding new user-->
+        <el-dialog
+                title="Add Administrator"
+                :visible.sync="centerDialogVisible"
+                width="80%"
+                center>
+            <div class="user-input">
+                <!--List of available Companies-->
+                <div class="user-info">
+                    <div>Company Name</div>
+                    <el-select v-model="selectedCompany" placeholder="Select" required>
+                        <el-option disabled value="">Select</el-option>
+                        <el-option
+                                v-for="company in getAllCompanies"
+                                :key="company.id"
+                                :label="company.name"
+                                :value="company.id">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="user-info">
+                    <span>Email</span>
+                    <el-input @keyup.native.enter="saveNewSuperUser"
+                              placeholder="Email" type="email" v-model="inputDataUsername" required></el-input>
+                </div>
+                <div class="user-info">
+                    <span>Password</span>
+                    <el-input @keyup.native.enter="saveNewSuperUser"
+                              placeholder="Password" type="password" v-model="inputDataPassword" required></el-input>
+                </div>
+                <el-button class="reset-btn" @click="reset">Clear All</el-button>
+            </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="closeModal">Cancel</el-button>
+            <el-button type="primary" @click="saveNewSuperUser">Save
+            </el-button>
+          </span>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+import {mapGetters, mapActions, mapState} from 'vuex'
+import * as moment from 'moment'
+
+let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // eslint-disable-line
+
+export default {
+  name: 'administrators',
+  computed: {
+    ...mapGetters('shared', ['availableCompanies']),
+    ...mapState('users', ['superUsers']),
+    ...mapState('shared', ['user']),
+    filterUsers () {
+      if (!this.momentFrom || !this.momentTo) {
+        return this.superUsers
+      }
+      return this.superUsers.filter((el) => {
+        let superUserDate = Number(new Date(el.date_joined))
+        return this.momentFrom < superUserDate && superUserDate < this.momentTo
+      })
+    },
+    getAllCompanies () {
+      let chooseAllCompanies = [{
+        id: null,
+        name: '*'
+      }]
+      return chooseAllCompanies.concat(this.availableCompanies)
+    },
+    companyValidation () {
+      let errMessage = ''
+      if (this.selectedCompany === '') {
+        errMessage = 'Please choose company'
+        this.$message(errMessage)
+        return
+      }
+      return errMessage
+    },
+    emailValidation () {
+      let errMessage = ''
+      let inputData = this.inputDataUsername.trim()
+      if (inputData.length === 0) {
+        errMessage = 'Email field is required'
+        this.$message(errMessage)
+        return
+      }
+      if (inputData.length && !emailRegex.test(inputData)) {
+        errMessage = 'Please Input Correct Email'
+        this.$message(errMessage)
+        return
+      }
+      return errMessage
+    },
+    passwordValidation () {
+      let errMessage
+      let inputData = this.inputDataPassword.trim()
+      if (inputData.length === 0) {
+        errMessage = 'Password field is required'
+        this.$message(errMessage)
+        return
+      }
+      if (inputData.length && inputData.length < 8) {
+        errMessage = 'Password should be more than 8 signs'
+        this.$message(errMessage)
+        return
+      }
+      return errMessage
+    }
+  },
+  methods: {
+    ...mapActions('users', ['loadSuperUsers', 'deleteSuperUser', 'addSuperUser', 'resetSuperUserPassword']),
+    sortDateJoined (a, b) {
+      let datefrom = parseInt(moment(a.date_joined).format('x'))
+      let dateTo = parseInt(moment(b.date_joined).format('x'))
+      if (datefrom > dateTo) {
+        return 1
+      } if (datefrom < dateTo) {
+        return -1
+      } else {
+        return 0
+      }
+    },
+    showFilteredUsers () {
+      let dateFrom = new Date(this.pickerDateFrom)
+      let dateTo = new Date(this.pickerDateTo)
+      this.momentFrom = parseInt(moment(dateFrom).format('x'))
+      this.momentTo = parseInt(moment(dateTo).format('x'))
+    },
+    clearFilteredUsers () {
+      this.momentFrom = ''
+      this.momentTo = ''
+      this.pickerDateFrom = ''
+      this.pickerDateTo = ''
+    },
+    saveNewSuperUser () {
+      if (this.companyValidation !== '') {
+        return
+      }
+      if (this.emailValidation !== '' && this.passwordValidation !== '') {
+        return
+      }
+      let payload = {
+        username: this.inputDataUsername,
+        password: this.inputDataPassword,
+        company_id: this.selectedCompany,
+        token: localStorage.carrierToken
+      }
+      this.centerDialogVisible = false
+      let addUser = async () => {
+        this.loading = true
+        await this.addSuperUser(payload)
+          .then(() => {
+            this.updateUsers()
+            this.loading = false
+            this.$message({
+              type: 'success',
+              message: 'Administrator Added Successfully!'
+            })
+          }, (e) => {
+            this.loading = false
+            console.log(e)
+            this.$message({
+              type: 'error',
+              message: 'Oops administrator was not added...'
+            })
+          })
+      }
+      this.reset()
+      return addUser()
+    },
+    removeUser (data) {
+      // prohibit the removal of oneself
+      if (this.user.username === data.username) return
+      // restriction if it is not superuser
+      if (!this.isUsersDownloaded || !this.user.is_superuser) return
+      this.$confirm('This will remove administrator. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        let deleteUser = async () => {
+          let userId = data.id
+          let companyId = this.companyId
+          let payload = {
+            userId,
+            companyId
+          }
+          this.loading = true
+          await this.deleteSuperUser(payload)
+            .then(() => {
+              this.updateUsers()
+              this.loading = false
+              this.$message({
+                type: 'success',
+                message: 'Administrator Removed Successfully!'
+              })
+            }, (e) => {
+              this.loading = false
+              console.log(e)
+              this.$message({
+                type: 'error',
+                message: 'Oops administrator was not removed...'
+              })
+            })
+        }
+        return deleteUser()
+      })
+    },
+    saveNewPassword (data) {
+      this.$prompt('Please input your new password', 'Reset Password', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        customClass: 'el-input-reset-password'
+      }).then(({ value }) => {
+        let savePassword = async () => {
+          let payload = {
+            userId: data.id,
+            token: localStorage.carrierToken,
+            companyId: this.companyId,
+            password: value
+          }
+          this.loading = true
+          await this.resetSuperUserPassword(payload)
+            .then(() => {
+              this.loading = false
+              this.$message({
+                type: 'success',
+                message: 'Password Updated Successfully!'
+              })
+            }, (e) => {
+              this.loading = false
+              console.log(e)
+              this.$message({
+                type: 'error',
+                message: 'Oops something was wrong...'
+              })
+            })
+        }
+        return savePassword()
+      })
+    },
+    updateUsers () {
+      let data = {
+        token: localStorage.carrierToken,
+        companyId: this.companyId
+      }
+      this.loading = true
+      this.loadSuperUsers(data)
+        .then(() => {
+          this.isUsersDownloaded = true
+          this.loading = false
+        })
+        .catch(e => {
+          this.isUsersDownloaded = false
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '' + e,
+          })
+        })
+    },
+    showModalWindow () {
+      this.centerDialogVisible = true
+    },
+    closeModal () {
+      this.centerDialogVisible = false
+      this.reset()
+    },
+    reset () {
+      this.inputDataUsername = ''
+      this.inputDataPassword = ''
+    },
+  },
+  created () {
+    this.loading = true
+    this.updateUsers()
+  },
+  data () {
+    let companyId = this.$route.params.companyId
+    return {
+      companyId,
+      centerDialogVisible: false,
+      resetPasswordVisible: false,
+      inputDataUsername: '',
+      inputDataPassword: '',
+      inputResetPassword: '',
+      selectedCompany: '',
+      isUsersDownloaded: false,
+      loading: false,
+      momentFrom: '',
+      momentTo: '',
+      pickerDateFrom: '',
+      pickerDateTo: ''
+    }
+  },
+}
+</script>
+
+<style lang="scss">
+    @import '../../styles/variables';
+
+    .user-info {
+        margin-right: 10px;
+    }
+    .text-details {
+        color: $gray--080;
+        font-size: .9em;
+    }
+
+
+    // Modal window
+    .user-input {
+        display: flex;
+    }
+    .el-input-reset-password .el-input > .el-input__inner {
+        -webkit-text-security: disc ;
+    }
+    .reset-btn {
+        position: relative;
+        height: 40px;
+        bottom: -24px;
+    }
+
+</style>

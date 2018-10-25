@@ -1,7 +1,7 @@
 <template>
   <div class="build-details">
     <ba-header activeModule="builds" v-if="isUserAuthorized"></ba-header>
-    <div v-loading="loading" class="build-details__root ">
+    <div v-loading="loading" class="build-details__root main-content">
       <div class="u-pt4"></div>
       <div class="u-pt4"></div>
       <div v-if="!isUserAuthorized">
@@ -343,9 +343,6 @@ export default {
 }
 </script>
 <style>
-  .build-details__root  .el-loading-mask{
-      z-index: 799;
-  }
 
   .build__pre {
     background-color: #eeeeee;

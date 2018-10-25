@@ -1,15 +1,15 @@
 <template>
   <div class="settings-module-root">
-    <ba-header activeModule="Settings"></ba-header>
-    <ba-page-with-sidebar :title="'Settings'">
+    <ba-header activeModule="Settings">
       <template slot="sidebar">
         <div class="sidebar-settings">
           <div class="c-nav__list" v-for="section in filteredSections">
             <a class="c-nav__link" :class="{'c-nav__link--active' : sectionInViewport === section.name }" :href="'#' + section.name">{{section.name}}</a>
           </div>
         </div>
-
       </template>
+    </ba-header>
+    <ba-page-with-sidebar :title="'Settings'">
       <template slot="main">
         <h3 class="u-pt5 c-heading__page u-pb3">Settings</h3>
 
@@ -30,7 +30,7 @@
         <ba-settings-section
             v-for="section in filteredSections"
             :key="section.name"
-            v-if="section.settings.length > 0"
+            v-if="section.settings.length > 0 && !loading"
             :section="section"
             :ref="'section__' + section.name"
         ></ba-settings-section>
@@ -125,11 +125,9 @@ export default {
         })
         map.set(currentSectionName, filteredSettingsInSection)
       })
-
       let keys = Array.from(map.keys())
       keys.sort()
       let result = []
-      console.log(keys)
       keys.forEach((key) => {
         if (this.sectionInViewport === null) {
           this.sectionInViewport = key
@@ -144,11 +142,18 @@ export default {
   },
   data () {
     let companyId = this.$route.params.companyId
-    this.load({companyId})
+    let loading = true
+    this.load({companyId}).then(() => {
+      this.loading = false
+    }, () => {
+      this.loading = false
+      this.$message('Settings is not found. Please reload page')
+    })
     return {
       searchFilter: '',
       sectionInViewport: null,
       companyId,
+      loading,
     }
   },
   created () {
@@ -159,6 +164,6 @@ export default {
   },
 }
 </script>
-<style scoped >
+<style>
 
 </style>

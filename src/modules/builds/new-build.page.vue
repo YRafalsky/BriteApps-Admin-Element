@@ -2,8 +2,8 @@
   <div class="new-build__root">
     <ba-header :activeModule="activeModule"></ba-header>
 
-    <div class="u-pt4"></div>
-    <div class="row u-p4">
+
+    <div class="row u-p4 u-pt4 main-content">
       <div class="el-card u-mb4">
         <h4 class="c-heading__section u-mb4">Run new build</h4>
 

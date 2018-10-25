@@ -7,6 +7,7 @@ import settingsModule from './settings.module'
 import contentModule from './content.module'
 import templatesModule from './templates.module'
 import sharedModule from './shared.module'
+import usersModule from "./users.module"
 
 let storeDescription = {
   modules: {
@@ -15,6 +16,7 @@ let storeDescription = {
     content: contentModule,
     templates: templatesModule,
     shared: sharedModule,
+    users: usersModule
   },
   actions: {
     init: function (context, payload) {

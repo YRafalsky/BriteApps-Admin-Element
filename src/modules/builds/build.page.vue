@@ -2,7 +2,7 @@
   <div class="builds-module-root">
     <ba-header :activeModule="activeModule"></ba-header>
 
-    <div class="builds-module__content">
+    <div class="builds-module__content main-content">
 
         <h2 class="u-pl4 u-mt2 c-heading__page">{{activeModule}}</h2>
         <router-link :to="{name: 'new-build', query: {mode: mode}}" @click="$event.preventDefault()">

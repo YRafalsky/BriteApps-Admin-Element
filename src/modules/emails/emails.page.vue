@@ -1,7 +1,7 @@
 <template>
   <div class="emails">
     <ba-header activeModule="Emails"></ba-header>
-    <div class="u-p4">
+    <div class="u-p4 main-content">
       <h2 class="c-heading__page u-mt4 u-pt2">EMails dashboard</h2>
       <div>
         <div class="u-mt3" v-show="view_mode=='group_events'">

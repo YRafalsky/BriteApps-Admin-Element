@@ -1,8 +1,6 @@
 <template>
   <div>
-    <ba-header activeModule="Templates"></ba-header>
-
-    <ba-page-with-sidebar :title="'Templates'">
+    <ba-header activeModule="Templates">
       <div slot="sidebar">
         <div class="c-nav__list">
           <div v-for="section in filteredTemplates">
@@ -10,8 +8,11 @@
           </div>
         </div>
       </div>
-      <div slot="main" :class="{'has-fixed-search': showFixedSearch}" v-loading="loading">
+    </ba-header>
 
+    <ba-page-with-sidebar :title="'Templates'">
+
+      <div slot="main" :class="{'has-fixed-search': showFixedSearch}" v-if="checkTemplates">
         <h3 class="u-pt5 c-heading__page u-pb3">Templates Customization</h3>
 
         <div class="search-container-shell">
@@ -54,7 +55,9 @@
 
         <ba-single-template v-for="template in filteredTemplates"
                             :template="template"
-                            :key="template.id">
+                            :key="template.id"
+                            :ref="'template__' + template.name"
+                            v-loading="loading">
 
         </ba-single-template>
 
@@ -77,14 +80,20 @@ export default {
   },
   data () {
     let companyId = this.$route.params.companyId
-
-    this.load({companyId})
+    let loading = true
+    this.load({companyId}).then(() => {
+      this.loading = false
+    }, () => {
+      this.loading = false
+      this.$message('Templates are not found. Please reload page')
+    })
     return {
       searchFilter: '',
       selectedLanguage: null,
       showOnlyOverridden: false,
       sectionInViewport: null,
-      isScrolled: false
+      isScrolled: false,
+      loading
     }
   },
   methods: {
@@ -119,13 +128,42 @@ export default {
       return searchFilterPass && overriddenFilterPass
     },
     handleScroll (e) {
+      let section = this.nearestSectionPositionToScroll(window.scrollY)
+      this.sectionInViewport = section
+    },
+    nearestSectionPositionToScroll (scrollY) {
+      let nearestSection = null
+      for (let i in this.filteredTemplates) {
+        let currentName = this.filteredTemplates[i].name
+        let refKey = 'template__' + currentName
+        let ref = this.$refs[refKey]
+        if (!ref) {
+          continue
+        }
+        if (ref.length <= 0) {
+          continue
+        }
+        let first = ref[0]
+        let fixedHeaderAdjust = 100
+        let currentOffset = first.$el.offsetTop - fixedHeaderAdjust
+        if (nearestSection === null) {
+          nearestSection = currentName
+        }
+        if (currentOffset < scrollY) {
+          nearestSection = currentName
+        }
+        if (currentOffset > scrollY) {
+          break
+        }
+      }
+      return nearestSection
     },
   },
   computed: {
     ...mapState('templates', ['all']),
 
-    loading () {
-      return this.all === undefined || this.all === null
+    checkTemplates () {
+      return this.all !== undefined || this.all !== null
     },
     showFixedSearch () {
       return this.isScrolled
