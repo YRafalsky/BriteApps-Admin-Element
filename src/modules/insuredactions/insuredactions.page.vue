@@ -1,7 +1,7 @@
 <template>
   <div class="emails">
     <ba-header activeModule="Emails"></ba-header>
-    <div class="u-p4">
+    <div class="u-p4 main-content">
       <h2 class="c-heading__page u-mt4 u-pt2">Insured Actions dashboard</h2>
       <div>
         <div class="u-mt3" >
@@ -27,8 +27,8 @@
             <el-table-column prop="message_code" label="Message code" width="200"></el-table-column>
             <el-table-column prop="user_name" label="user_name" width="200"></el-table-column>
             <el-table-column prop="received_at" label="Timestamp" width="220"></el-table-column>
-            <el-table-column prop="message_timestamp" label="Message timestamp" width="220"></el-table-column>
-            <el-table-column label="Extra vars" width="220">
+            <el-table-column prop="message_timestamp" label="Message timestamp" width="170"></el-table-column>
+            <el-table-column label="Extra vars" width="150">
               <template slot-scope="scope">{{scope.row.extra_vars}}</template>
             </el-table-column>
           </el-table>
